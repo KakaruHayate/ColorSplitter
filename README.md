@@ -24,7 +24,7 @@ pip install -r requirements.txt
 
 # How to Use
 
-1. Move your well-made Diffsinger dataset to the `.\input` folder and run the following command
+**1. Move your well-made Diffsinger dataset to the `.\input` folder and run the following command**
 
 ```
 python splitter.py --spk <speaker_name> --nmax <'N'_max_num>
@@ -44,7 +44,7 @@ Tips: This project does not need to read the annotation file (transcriptions.csv
 ```
 The wav files are best already split
 
-2. (Optional) Exclude outliers as shown in the figure below
+**2. (Optional) Exclude outliers as shown in the figure below**
 
 ![kick](IMG/{68AAFB0D-E298-4087-B041-3593260314AC}.png)
 
@@ -56,7 +56,7 @@ The separated data will be saved in `.\input\<speaker_name>_<n_num>_<clust_num>`
 
 Please note that running this step may not necessarily optimize the results
 
-3. Find the optimal result through the silhouette score. The higher the silhouette score, the better the result, but the optimal result may not be at the highest score, it may be on the adjacent result
+**3. Find the optimal result through the silhouette score. The higher the silhouette score, the better the result, but the optimal result may not be at the highest score, it may be on the adjacent result**
 
 ![scores](IMG/{6BDE2B2B-3C7A-4de5-90E8-C55DB1FC18C0}.png)
 
@@ -68,7 +68,7 @@ The classified results will be saved in `.\output\<speaker_name>\<clust_num>`
 After that, you still need to manually merge the too small clusters to meet the training requirements
 
 
-4. (Optional) Move `clean_csv.py` to the same level as `transcriptions.csv` and run it, you can delete the wav file entries that are not included in the `wavs` folder
+**4. (Optional) Move `clean_csv.py` to the same level as `transcriptions.csv` and run it, you can delete the wav file entries that are not included in the `wavs` folder**
 
 
 # Based on Project
