@@ -1,4 +1,4 @@
-![图片](https://github.com/KakaruHayate/ColorSplitter/assets/97896816/2b84dd2a-0390-4378-9d23-79f8e77a02be)# ColorSplitter
+# ColorSplitter
 
 一个用于分离歌声音色的命令行工具
 
@@ -41,7 +41,8 @@ tips:本项目并不需要读取Diffsinger数据集的标注文件（transcripti
 ```
 其中wav文件最好已经进行过切分
 
-2.**（可选）**剔除如下图所示的离群点
+2.（可选）**剔除如下图所示的离群点
+
 ![kick](IMG/{68AAFB0D-E298-4087-B041-3593260314AC}.png)
 
 如同所示，簇3明显为少数离群点，可以使用以下命令将其从数据集中分离
@@ -53,7 +54,9 @@ python kick.py --spk <speaker_name> --n <n_num> --clust <clust_num>
 请注意运行此步骤未必会对结果产生正向优化
 
 3.通过轮廓分数寻找最优结果，轮廓分数越高则结果越好，但最优结果不一定在最高分处，可能在邻近的结果上
+
 ![scores](IMG/{6BDE2B2B-3C7A-4de5-90E8-C55DB1FC18C0}.png)
+
 选定你认为的最优结果后，运行以下命令将数据集中的wav文件分类
 ```
 python move_files.py --spk <speaker_name> --n <n_num>
@@ -61,7 +64,7 @@ python move_files.py --spk <speaker_name> --n <n_num>
 分类后结果将保存到`.\output\<speaker_name>\<clust_num>`中
 在那之后还需要人工对过小的簇进行归并，以达到训练的需求
 
-4.**（可选）**将`clean_csv.py`移动到与`transcriptions.csv`同级后运行，可以删除`wavs`文件夹中没有包含的wav文件条目
+4.（可选）**将`clean_csv.py`移动到与`transcriptions.csv`同级后运行，可以删除`wavs`文件夹中没有包含的wav文件条目
 
 # 基于项目
 
