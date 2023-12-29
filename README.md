@@ -41,7 +41,7 @@ tips:本项目并不需要读取Diffsinger数据集的标注文件（transcripti
 ```
 其中wav文件最好已经进行过切分
 
-2.（可选）**剔除如下图所示的离群点
+2.（可选）剔除如下图所示的离群点
 
 ![kick](IMG/{68AAFB0D-E298-4087-B041-3593260314AC}.png)
 
@@ -64,7 +64,7 @@ python move_files.py --spk <speaker_name> --n <n_num>
 分类后结果将保存到`.\output\<speaker_name>\<clust_num>`中
 在那之后还需要人工对过小的簇进行归并，以达到训练的需求
 
-4.（可选）**将`clean_csv.py`移动到与`transcriptions.csv`同级后运行，可以删除`wavs`文件夹中没有包含的wav文件条目
+4.（可选）将`clean_csv.py`移动到与`transcriptions.csv`同级后运行，可以删除`wavs`文件夹中没有包含的wav文件条目
 
 # 基于项目
 
