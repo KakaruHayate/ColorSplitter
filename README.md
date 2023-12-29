@@ -7,7 +7,9 @@ A command-line tool for separating vocal timbres
 # Introduction
 
 ColorSplitter is a command-line tool designed to classify the timbre styles of single-speaker data in the early stages of vocal data processing.
+
 **Please note**, this project is based on speaker identification technology, and it is currently uncertain whether the timbre changes in singing are completely related to the differences in voiceprints, just for fun :) 
+
 The research in this field is still lacking, and this is just a start. Thanks to the community users:洛泠羽
 
 # Environment Configuration
