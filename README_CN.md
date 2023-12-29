@@ -1,5 +1,7 @@
 # ColorSplitter
 
+![result](IMG/93ff10b42d8cc753527e50c41b8e2d72.png)
+
 一个用于分离歌声音色的命令行工具
 
 # 介绍

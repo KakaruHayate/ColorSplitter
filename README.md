@@ -1,5 +1,7 @@
 # ColorSplitter
 
+![result](IMG/93ff10b42d8cc753527e50c41b8e2d72.png)
+
 [中文文档](README_CN.MD)
 
 A command-line tool for separating vocal timbres
