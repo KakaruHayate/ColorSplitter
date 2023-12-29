@@ -21,7 +21,7 @@ pip install -r requirements.txt
 
 # 如何使用
 
-1.将你制作好的Diffsinger数据集移动到`.\input`文件夹下，运行以下命令
+**1.将你制作好的Diffsinger数据集移动到`.\input`文件夹下，运行以下命令**
 
 ```
 python splitter.py --spk <speaker_name> --nmax <'N'_max_num>
@@ -41,7 +41,7 @@ tips:本项目并不需要读取Diffsinger数据集的标注文件（transcripti
 ```
 其中wav文件最好已经进行过切分
 
-2.（可选）剔除如下图所示的离群点
+**2.（可选）剔除如下图所示的离群点**
 
 ![kick](IMG/{68AAFB0D-E298-4087-B041-3593260314AC}.png)
 
@@ -53,7 +53,7 @@ python kick.py --spk <speaker_name> --n <n_num> --clust <clust_num>
 
 请注意运行此步骤未必会对结果产生正向优化
 
-3.通过轮廓分数寻找最优结果，轮廓分数越高则结果越好，但最优结果不一定在最高分处，可能在邻近的结果上
+**3.通过轮廓分数寻找最优结果，轮廓分数越高则结果越好，但最优结果不一定在最高分处，可能在邻近的结果上**
 
 ![scores](IMG/{6BDE2B2B-3C7A-4de5-90E8-C55DB1FC18C0}.png)
 
@@ -64,7 +64,7 @@ python move_files.py --spk <speaker_name> --n <n_num>
 分类后结果将保存到`.\output\<speaker_name>\<clust_num>`中
 在那之后还需要人工对过小的簇进行归并，以达到训练的需求
 
-4.（可选）将`clean_csv.py`移动到与`transcriptions.csv`同级后运行，可以删除`wavs`文件夹中没有包含的wav文件条目
+**4.（可选）将`clean_csv.py`移动到与`transcriptions.csv`同级后运行，可以删除`wavs`文件夹中没有包含的wav文件条目**
 
 # 基于项目
 
