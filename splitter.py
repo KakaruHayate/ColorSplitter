@@ -22,7 +22,7 @@ Nmax = args.nmax # set Nmax values
 data_dir = os.path.join("input", Speaker_name, "raw", "wavs")
 wav_fpaths = list(Path(data_dir).glob("*.wav"))
 
-encoder = VoiceEncoder(weights_fpath="pretrain/encoder_217500.bak")
+encoder = VoiceEncoder(weights_fpath="pretrain/encoder_112500.bak")
 
 wavs = [preprocess_wav(wav_fpath) for wav_fpath in \
         tqdm(wav_fpaths, f"Preprocessing wavs ({len(wav_fpaths)} utterances)")]
@@ -46,7 +46,7 @@ for i in tqdm(range(2, Nmax + 1), desc = "Clustering..."):
         'clust': Cluster.labels_
     })
 
-    df.to_csv(f'output/{Speaker_name}/clustered_files_{i}.csv', index=False)
+    df.to_csv(f'{output_dir}/clustered_files_{i}.csv', index=False)
     Cluster_per_N.append(Cluster)
      
 scores = [metrics.silhouette_score(utterance_embeds, model.labels_) for model in tqdm(Cluster_per_N, desc = "Programming scores")]
