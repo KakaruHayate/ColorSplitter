@@ -6,7 +6,7 @@ from pathlib import Path
 from tqdm import tqdm
 import numpy as np
 import matplotlib.pyplot as plt
-from modules.demo_utils import *
+from modules.Resemblyzer.demo_utils import *
 import argparse
 import os
 

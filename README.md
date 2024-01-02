@@ -1,10 +1,12 @@
 # ColorSplitter
 
-![result](IMG/93ff10b42d8cc753527e50c41b8e2d72.png)
+![result](IMG/20240102162212.png)
 
 [中文文档](README_CN.md)
 
 A command-line tool for separating vocal timbres
+
+The encoder model train by total of 303 speakers for 52 hours data 
 
 # Introduction
 
@@ -16,13 +18,15 @@ The research in this field is still lacking, and this is just a start. Thanks to
 
 # Environment Configuration
 
-It works normally under `python3.8`, please go to [install pytorch](https://pytorch.org/) (this project can run under CPU/GPU) and [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
+It works normally under `python3.8`, please go to install [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
 
 Then use the following command to install environment dependencies
 
 ```
 pip install -r requirements.txt
 ```
+
+Tips:This tools running in CPU much quicker than GPU
 
 # How to Use
 

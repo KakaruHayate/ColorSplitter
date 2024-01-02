@@ -1,8 +1,9 @@
-matplotlib==3.5.1
-numpy==1.20.3
-pandas==2.0.3
-Resemblyzer==0.1.4
-scikit_learn==1.0.2
-sounddevice==0.4.3
-tqdm==4.62.3
-umap_learn==0.5.2
+torch
+matplotlib>=3.0.0
+numpy>=1.20.3
+pandas
+Resemblyzer
+scikit_learn
+sounddevice
+tqdm
+umap_learn
