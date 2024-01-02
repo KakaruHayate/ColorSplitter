@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn.cluster import SpectralClustering
+from sklearn.cluster import *
 from sklearn import metrics
 from resemblyzer import preprocess_wav, VoiceEncoder
 from pathlib import Path
@@ -33,6 +33,9 @@ utterance_embeds = np.nan_to_num(resemblyzer_embeds)
 Cluster_per_N = []
 for i in tqdm(range(2, Nmax + 1), desc = "Clustering..."):
     Cluster = SpectralClustering(n_clusters=i, affinity='nearest_neighbors', random_state=0, gamma=1.0, n_init = 10).fit(utterance_embeds)
+    #Cluster = AgglomerativeClustering(n_clusters=i).fit(utterance_embeds)
+    #Cluster = Birch(n_clusters=i, threshold= 0.2).fit(utterance_embeds)
+    #Cluster = KMeans(n_clusters=i, random_state=10).fit(utterance_embeds)
     
     plot_projections(utterance_embeds, Cluster.labels_, title="Embedding projections")
     
