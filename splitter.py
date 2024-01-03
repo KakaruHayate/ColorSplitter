@@ -1,12 +1,13 @@
 import pandas as pd
 from sklearn.cluster import *
 from sklearn import metrics
-from resemblyzer import preprocess_wav, VoiceEncoder
+from resemblyzer import preprocess_wav
 from pathlib import Path
 from tqdm import tqdm
 import numpy as np
 import matplotlib.pyplot as plt
-from modules.Resemblyzer.demo_utils import *
+from modules.Resemblyzer.visualizations import *
+from modules.Resemblyzer.voice_encoder import *
 import argparse
 import os
 
@@ -22,7 +23,7 @@ Nmax = args.nmax # set Nmax values
 data_dir = os.path.join("input", Speaker_name, "raw", "wavs")
 wav_fpaths = list(Path(data_dir).glob("*.wav"))
 
-encoder = VoiceEncoder(weights_fpath="pretrain/encoder_112500.bak")
+encoder = VoiceEncoder(weights_fpath="pretrain/encoder_067500.bak")
 
 wavs = [preprocess_wav(wav_fpath) for wav_fpath in \
         tqdm(wav_fpaths, f"Preprocessing wavs ({len(wav_fpaths)} utterances)")]
