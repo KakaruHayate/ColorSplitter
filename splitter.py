@@ -23,7 +23,7 @@ Nmax = args.nmax # set Nmax values
 data_dir = os.path.join("input", Speaker_name, "raw", "wavs")
 wav_fpaths = list(Path(data_dir).glob("*.wav"))
 
-encoder = VoiceEncoder(weights_fpath="pretrain/encoder_027000.bak")
+encoder = VoiceEncoder(weights_fpath="pretrain/encoder_126000.bak")
 
 wavs = [preprocess_wav(wav_fpath) for wav_fpath in \
         tqdm(wav_fpaths, f"Preprocessing wavs ({len(wav_fpaths)} utterances)")]
