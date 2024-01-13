@@ -7,3 +7,4 @@ scikit_learn
 sounddevice
 tqdm
 umap_learn
+hdbscan

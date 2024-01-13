@@ -1,61 +1,58 @@
 import pandas as pd
-from sklearn.cluster import *
-from sklearn import metrics
-from resemblyzer import preprocess_wav
+from resemblyzer import preprocess_wav, VoiceEncoder
 from pathlib import Path
 from tqdm import tqdm
 import numpy as np
 import matplotlib.pyplot as plt
 from modules.Resemblyzer.visualizations import *
-from modules.Resemblyzer.voice_encoder import *
+from modules.speakerlab.cluster import CommonClustering  
 import argparse
 import os
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--spk', type=str, help='Speaker name')
-parser.add_argument('--nmax', type=int, default=10, help='Maximum number of clusters')
+parser.add_argument('--nmin', type=int, default=1, help='minimum number of clusters')
+parser.add_argument('--cluster', type=int, default=1, help='1:SpectralCluster, 2:UmapHdbscan')
+parser.add_argument('--mer_cosine', type=str, default=None, help='merge similar timbre')
 args = parser.parse_args()
 
 Speaker_name = args.spk #Speaker name
-Nmax = args.nmax # set Nmax values
+Nmin = args.nmin # set Nmax values
+merge_cos = args.mer_cosine
+
+if args.cluster == 1:
+    cluster_name = 'spectral'
+    min_num_spks=Nmin
+    mer_cos=merge_cos
+    Cluster = CommonClustering(cluster_type=cluster_name, mer_cos=None, min_num_spks=Nmin)
+elif args.cluster == 2:
+    cluster_name = 'umap_hdbscan'
+    mer_cos=merge_cosine
+    Cluster = CommonClustering(mer_cos=None, cluster_type=cluster_name)
+else:
+    raise ValueError('cluster type error')
 
 data_dir = os.path.join("input", Speaker_name, "raw", "wavs")
 wav_fpaths = list(Path(data_dir).glob("*.wav"))
 
-encoder = VoiceEncoder(weights_fpath="pretrain/encoder_126000.bak")
-
+encoder = VoiceEncoder(weights_fpath="pretrain/encoder_1570000.bak")
 wavs = [preprocess_wav(wav_fpath) for wav_fpath in \
-        tqdm(wav_fpaths, f"Preprocessing wavs ({len(wav_fpaths)} utterances)")]
-        
+        tqdm(wav_fpaths, f"Preprocessing wavs ({len(wav_fpaths)} utterances)")] 
 resemblyzer_embeds = np.array(list(map(encoder.embed_utterance, wavs)))
-utterance_embeds = np.nan_to_num(resemblyzer_embeds)
 
-Cluster_per_N = []
-for i in tqdm(range(2, Nmax + 1), desc = "Clustering..."):
-    Cluster = SpectralClustering(n_clusters=i, affinity='nearest_neighbors', random_state=0, gamma=1.0, n_init = 10).fit(utterance_embeds)
-    #Cluster = AgglomerativeClustering(n_clusters=i).fit(utterance_embeds)
-    #Cluster = Birch(n_clusters=i, threshold= 0.2).fit(utterance_embeds)
-    #Cluster = KMeans(n_clusters=i, random_state=10).fit(utterance_embeds)
-    
-    plot_projections(utterance_embeds, Cluster.labels_, title="Embedding projections")
-    
-    output_dir = f'output/{Speaker_name}'
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-    plt.savefig(f'{output_dir}/embedding_projections_{i}.png', dpi=600)
+labels = Cluster.__call__(resemblyzer_embeds)
 
-    df = pd.DataFrame({
-        'filename': [str(fpath) for fpath in wav_fpaths],
-        'clust': Cluster.labels_
-    })
+output_dir = f'output/{Speaker_name}'
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
 
-    df.to_csv(f'{output_dir}/clustered_files_{i}.csv', index=False)
-    Cluster_per_N.append(Cluster)
-     
-scores = [metrics.silhouette_score(utterance_embeds, model.labels_) for model in tqdm(Cluster_per_N, desc = "Programming scores")]
+df = pd.DataFrame({
+    'filename': [str(fpath) for fpath in wav_fpaths],
+    'clust': labels
+})
+df.to_csv(f'{output_dir}/clustered_files.csv', index=False)
 
-plt.figure(figsize = (8, 4))
-plt.plot(range(2, Nmax + 1), scores, 'bo-')
-plt.savefig(f'{output_dir}/scores.png', dpi=600)
+plot_projections(resemblyzer_embeds, labels, title="Embedding projections")
+plt.savefig(f'{output_dir}/embedding_projections.png', dpi=600)
 plt.show()

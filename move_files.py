@@ -6,14 +6,12 @@ import os
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--spk', type=str, help='Speaker name')
-parser.add_argument('--n', type=str, help='N num')
 args = parser.parse_args()
 
 
 Speaker_name = args.spk #Speaker name
-Nnum = args.n
  
-data = pd.read_csv(os.path.join('output', Speaker_name, f'clustered_files_{Nnum}.csv'))
+data = pd.read_csv(os.path.join('output', Speaker_name, f'clustered_files.csv'))
 
 for index, row in data.iterrows():
     file_path = row['filename']

@@ -10,11 +10,40 @@ The encoder model train by total of 303 speakers for 52 hours data
 
 # Introduction
 
-ColorSplitter is a command-line tool designed to classify the timbre styles of single-speaker data in the early stages of vocal data processing.
+ColorSplitter is a command-line tool for classifying the vocal timbre styles of single-speaker data in the pre-processing stage of vocal data.
 
-**Please note**, this project is based on speaker identification technology, and it is currently uncertain whether the timbre changes in singing are completely related to the differences in voiceprints, just for fun :) 
+For scenarios that do not require style classification, using this tool to filter data can also reduce the problem of unstable timbre performance of the model.
 
-The research in this field is still lacking, and this is just a start. Thanks to the community users:洛泠羽
+**Please note** that this project is based on Speaker Verification technology, and it is not clear whether the timbre changes of singing are completely related to the voiceprint differences, just for fun :)
+
+The research in this field is still scarce, hoping to inspire more ideas.
+
+Thanks to the community user: 洛泠羽
+
+# New version features
+
+Implemented automatic optimization of clustering results, no longer need users to judge the optimal clustering results themselves.
+
+`splitter.py` deleted the `--nmax` parameter, added `--nmin` (minimum number of timbre types, invalid when cluster parameter is 2) `--cluster` (clustering method, 1:SpectralCluster, 2:UmapHdbscan), `--mer_cosine` to merge clusters that are too similar.
+
+**New version tips**
+
+1. Run `splitter.py` directly with the default parameters by specifying the speaker.
+
+2. If the result has only one cluster, observe the distribution map, set `--nmin` to the number you think is reasonable, and run `splitter.py` again.
+
+3. The optimal value of `--nmin` may be smaller than expected in actual tests.
+
+4. The new clustering algorithm is faster, it is recommended to try multiple times.
+
+# Progress
+
+- [x] **Correctly trained weights**
+- [x] Clustering algorithm optimization
+- [ ] CAM++
+- [ ] ERes2Net
+- [ ] emotional encoder
+- [ ] embed mix
 
 # Environment Configuration
 
@@ -33,10 +62,10 @@ Tips:This tools running in CPU much quicker than GPU
 **1. Move your well-made Diffsinger dataset to the `.\input` folder and run the following command**
 
 ```
-python splitter.py --spk <speaker_name> --nmax <'N'_max_num>
+python splitter.py --spk <speaker_name> --nmin <'N'_min_num>
 ```
 
-Enter the speaker name after `--spk`, and enter the maximum number of timbre types after `--nmax` (minimum 2, maximum 14)
+Enter the speaker name after `--spk`, and enter the minimum number of timbre types after `--nmin` (minimum 1, maximum 14，default 1)
 
 Tips: This project does not need to read the annotation file (transcriptions.csv) of the Diffsinger dataset, so as long as the file structure is as shown below, it can work normally
 ```
@@ -56,19 +85,15 @@ The wav files are best already split
 
 As shown, cluster 3 is obviously a minority outlier, you can use the following command to separate it from the dataset
 ```
-python kick.py --spk <speaker_name> --n <n_num> --clust <clust_num>
+python kick.py --spk <speaker_name> --clust <clust_num>
 ```
 The separated data will be saved in `.\input\<speaker_name>_<n_num>_<clust_num>`
 
 Please note that running this step may not necessarily optimize the results
 
-**3. Find the optimal result through the silhouette score. The higher the silhouette score, the better the result, but the optimal result may not be at the highest score, it may be on the adjacent result**
-
-![scores](IMG/{6BDE2B2B-3C7A-4de5-90E8-C55DB1FC18C0}.png)
-
-After you select the optimal result you think, run the following command to classify the wav files in the dataset
+**3. After you select the optimal result you think, run the following command to classify the wav files in the dataset
 ```
-python move_files.py --spk <speaker_name> --n <n_num>
+python move_files.py --spk <speaker_name>
 ```
 The classified results will be saved in `.\output\<speaker_name>\<clust_num>`
 After that, you still need to manually merge the too small clusters to meet the training requirements
@@ -80,3 +105,5 @@ After that, you still need to manually merge the too small clusters to meet the 
 # Based on Project
 
 [Resemblyzer](https://github.com/resemble-ai/Resemblyzer/)
+
+[3D-Speaker](https://github.com/alibaba-damo-academy/3D-Speaker/)
