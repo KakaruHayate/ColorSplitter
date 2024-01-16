@@ -9,6 +9,7 @@ from modules.speakerlab.cluster import CommonClustering
 import argparse
 import os
 import pickle
+import librosa
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--spk', type=str, help='Speaker name')
