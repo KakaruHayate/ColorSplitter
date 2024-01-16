@@ -12,7 +12,7 @@ args = parser.parse_args()
 Speaker_name = args.spk #Speaker name
 clust_value = args.clust # Cluster value
 
-data = pd.read_csv(os.path.join('output', Speaker_name, f'clustered_files.csv'))
+data = pd.read_csv(os.path.join('output', Speaker_name, f'clustered_files(timbre).csv'))
 
 for index, row in data.iterrows():
     file_path = row['filename']
