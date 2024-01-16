@@ -73,6 +73,7 @@ def process_func(
     # then we put it on the device
     y = processor(x, sampling_rate=sampling_rate)
     y = y['input_values'][0]
+    y = y.reshape(1, -1)
     y = torch.from_numpy(y).to(device)
 
     # run through model
