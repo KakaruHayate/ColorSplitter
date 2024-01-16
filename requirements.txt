@@ -8,3 +8,4 @@ sounddevice
 tqdm
 umap_learn
 hdbscan
+transformers
