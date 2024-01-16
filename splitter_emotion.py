@@ -33,7 +33,7 @@ if os.path.exists(features_path):
     with open(features_path, 'rb') as f:
         embeds = pickle.load(f)
 else:
-    wav, sr = librosa.load(path, 16000)
+    wav, sr = librosa.load(wav_fpaths, 16000)
     embeds = encoder.encode(np.expand_dims(wav, 0), sr, embeddings=True)
     with open(features_path, 'wb') as f:
         pickle.dump(embeds, f)
