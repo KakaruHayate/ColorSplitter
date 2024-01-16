@@ -55,15 +55,10 @@ class EmotionModel(Wav2Vec2PreTrainedModel):
 
 
 # load model from hub
-# device = 'cpu'
-# model_name = 'audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim'
-# processor = Wav2Vec2Processor.from_pretrained(model_name)
-# model = EmotionModel.from_pretrained(model_name).to(device)
-
-model_dir = "/pretrain/emotion_encoder"
-processor_dir = "/pretrain/emotion_encoder"
-processor = Wav2Vec2Processor.from_pretrained(processor_dir)
-model = Wav2Vec2Model.from_pretrained(model_dir)
+device = 'cpu'
+model_name = 'audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim'
+processor = Wav2Vec2Processor.from_pretrained(model_name)
+model = EmotionModel.from_pretrained(model_name).to(device)
 
 
 def process_func(
