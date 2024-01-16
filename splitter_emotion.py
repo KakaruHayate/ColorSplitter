@@ -25,16 +25,14 @@ merge_cos = args.mer_cosine
 data_dir = os.path.join("input", Speaker_name, "raw", "wavs")
 wav_fpaths = list(Path(data_dir).glob("*.wav"))
 
-encoder = EmotionEncoder()
-
 # Check if features already exist
 features_path = os.path.join("input", Speaker_name, "features(emotion).pkl")
 if os.path.exists(features_path):
     with open(features_path, 'rb') as f:
         embeds = pickle.load(f)
 else:
-    wav, sr = librosa.load(wav_fpaths, 16000)
-    embeds = encoder.encode(np.expand_dims(wav, 0), sr, embeddings=True)
+    embeds = [extract_wav(wav_fpath) for wav_fpath in \
+            tqdm(wav_fpaths, f"Preprocessing wavs ({len(wav_fpaths)} utterances)")] 
     with open(features_path, 'wb') as f:
         pickle.dump(embeds, f)
 
