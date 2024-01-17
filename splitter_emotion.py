@@ -61,7 +61,7 @@ while True:
     })
     df.to_csv(f'{output_dir}/clustered_files(emotion).csv', index=False)
 
-    plot_projections(resemblyzer_embeds, labels, title="Embedding projections")
+    plot_projections(resemblyzer_embeds, labels, title="Embedding projections", cluster=cluster_name)
     plt.savefig(f'{output_dir}/embedding_projections(emotion).png', dpi=600)
     plt.show()
 

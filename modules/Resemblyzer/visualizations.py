@@ -90,14 +90,18 @@ def plot_histograms(all_samples, ax=None, names=None, title=""):
 
 
 def plot_projections(embeds, speakers, ax=None, colors=None, markers=None, legend=True, 
-                     title="", **kwargs):
+                     title="", cluster_name="", **kwargs):
     if ax is None:
         _, ax = plt.subplots(figsize=(6, 6))
         
+    if cluster_name == 'spectral':
+        reducer = TSNE(init='pca', **kwargs)
+    if cluster_name == 'umap_hdbscan':
+        reducer = UMAP(**kwargs)
+    
     # Compute the 2D projections. You could also project to another number of dimensions (e.g. 
     # for a 3D plot) or use a different different dimensionality reduction like PCA or TSNE.
-    reducer = UMAP(**kwargs)
-    #reducer = TSNE(init='pca', **kwargs)
+    
     projs = reducer.fit_transform(embeds)
     
     # Draw the projections
@@ -114,8 +118,9 @@ def plot_projections(embeds, speakers, ax=None, colors=None, markers=None, legen
     if legend:
         ax.legend(title="Speakers", ncol=2)
     ax.set_title(title)
-    ax.set_xticks([])
-    ax.set_yticks([])
+    #ax.set_xticks([])
+    #ax.set_yticks([])
+    ax.grid(True)
     ax.set_aspect("equal")
     
     return projs
