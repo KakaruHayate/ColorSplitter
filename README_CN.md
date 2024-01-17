@@ -40,7 +40,7 @@ ColorSplitter是一个为了在歌声数据的处理前期，对单说话人数�
 - [x] 聚类算法优化
 - [ ] CAM++
 - [ ] ERes2Net
-- [ ] emotional encoder
+- [x] emotional encoder
 - [ ] embed mix
 
 # 环境配置
