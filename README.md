@@ -42,7 +42,7 @@ Implemented automatic optimization of clustering results, no longer need users t
 - [x] Clustering algorithm optimization
 - [ ] CAM++
 - [ ] ERes2Net
-- [ ] emotional encoder
+- [x] emotional encoder
 - [ ] embed mix
 
 # Environment Configuration
