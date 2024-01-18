@@ -41,7 +41,7 @@ Implemented automatic optimization of clustering results, no longer need users t
 - [x] **Correctly trained weights**
 - [x] Clustering algorithm optimization
 - [ ] CAM++
-- [ ] ERes2Net
+- [ ] ~ERes2Net~
 - [x] emotional encoder
 - [ ] embed mix
 
