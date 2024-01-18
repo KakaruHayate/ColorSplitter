@@ -56,10 +56,12 @@ class EmotionModel(Wav2Vec2PreTrainedModel):
 
 # load model from hub
 device = 'cpu'
+path = ''
 model_name = 'audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim'
 processor = Wav2Vec2Processor.from_pretrained(model_name)
 model = EmotionModel.from_pretrained(model_name).to(device)
 
+# 对于国内用户：可以前往 https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/tree/main 下载模型pytorch_model.bin，以及配置文件 config.json preprocessor_config.json vocab.json 到同一目录下，将59行path内填入模型所在目录
 
 def process_func(
         x: np.ndarray,
@@ -86,52 +88,8 @@ def process_func(
     return y
 
 
-#
-#
-# def disp(rootpath, wavname):
-#     wav, sr = librosa.load(f"{rootpath}/{wavname}", 16000)
-#     display(ipd.Audio(wav, rate=sr))
-
-rootpath = "dataset/nene"
-embs = []
-wavnames = []
-
-
-def extract_dir(path):
-    rootpath = path
-    for idx, wavname in enumerate(os.listdir(rootpath)):
-        wav, sr = librosa.load(f"{rootpath}/{wavname}", 16000)
-        emb = process_func(np.expand_dims(wav, 0), sr, embeddings=True)
-        embs.append(emb)
-        wavnames.append(wavname)
-        np.save(f"{rootpath}/{wavname}.emo.npy", emb.squeeze(0))
-        print(idx, wavname)
-
-
 def extract_wav(path):
     wav, sr = librosa.load(path, 16000)
     emb = process_func(np.expand_dims(wav, 0), sr, embeddings=True)
     return emb
 
-
-def preprocess_one(path):
-    wav, sr = librosa.load(path, 16000)
-    emb = process_func(np.expand_dims(wav, 0), sr, embeddings=True)
-    np.save(f"{path}.emo.npy", emb.squeeze(0))
-    return emb
-
-
-if __name__ == '__main__':
-    import argparse
-
-    parser = argparse.ArgumentParser(description='Emotion Extraction Preprocess')
-    parser.add_argument('--filelists', dest='filelists',nargs="+", type=str, help='path of the filelists')
-    args = parser.parse_args()
-
-    for filelist in args.filelists:
-        print(filelist,"----start emotion extract-------")
-        with open(filelist) as f:
-            for idx, line in enumerate(f.readlines()):
-                path = line.strip().split("|")[0]
-                preprocess_one(path)
-                print(idx, path)
