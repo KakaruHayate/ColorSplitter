@@ -63,7 +63,7 @@ while True:
     })
     df.to_csv(f'{output_dir}/clustered_files(timbre).csv', index=False)
 
-    plot_projections(resemblyzer_embeds, labels, title="Embedding projections", cluster=cluster_name)
+    plot_projections(resemblyzer_embeds, labels, title="Embedding projections", cluster_name=cluster_name)
     plt.savefig(f'{output_dir}/embedding_projections(timbre).png', dpi=600)
     plt.show()
 
