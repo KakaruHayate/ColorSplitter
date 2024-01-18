@@ -49,6 +49,7 @@ while True:
     else:
         raise ValueError('cluster type error')
 
+    emotion_embeds = np.concatenate(embeds,axis=0)
     labels = Cluster.__call__(embeds)
 
     output_dir = f'output/{Speaker_name}'
