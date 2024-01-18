@@ -49,7 +49,7 @@ while True:
     else:
         raise ValueError('cluster type error')
 
-    labels = Cluster.__call__(resemblyzer_embeds)
+    labels = Cluster.__call__(embeds)
 
     output_dir = f'output/{Speaker_name}'
     if not os.path.exists(output_dir):
@@ -61,7 +61,7 @@ while True:
     })
     df.to_csv(f'{output_dir}/clustered_files(emotion).csv', index=False)
 
-    plot_projections(resemblyzer_embeds, labels, title="Embedding projections", cluster_name=cluster_name)
+    plot_projections(embeds, labels, title="Embedding projections", cluster_name=cluster_name)
     plt.savefig(f'{output_dir}/embedding_projections(emotion).png', dpi=600)
     plt.show()
 
