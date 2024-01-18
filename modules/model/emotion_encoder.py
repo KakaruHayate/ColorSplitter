@@ -56,12 +56,12 @@ class EmotionModel(Wav2Vec2PreTrainedModel):
 
 # load model from hub
 device = 'cpu'
-path = ''
+model_path = ''
 model_name = 'audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim'
 processor = Wav2Vec2Processor.from_pretrained(model_name)
 model = EmotionModel.from_pretrained(model_name).to(device)
 
-# 对于国内用户：可以前往 https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/tree/main 下载模型pytorch_model.bin，以及配置文件 config.json preprocessor_config.json vocab.json 到同一目录下，将59行path内填入模型所在目录
+# 对于国内用户：可以前往 https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/tree/main 下载模型pytorch_model.bin，以及配置文件 config.json preprocessor_config.json vocab.json 到同一目录下，将59行model_path内填入模型所在目录，将后面的model_name改为model_path
 
 def process_func(
         x: np.ndarray,

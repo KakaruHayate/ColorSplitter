@@ -4,8 +4,8 @@ from pathlib import Path
 from tqdm import tqdm
 import numpy as np
 import matplotlib.pyplot as plt
-from modules.Resemblyzer.visualizations import *
-from modules.speakerlab.cluster import CommonClustering  
+from modules.visualizations import *
+from modules.cluster import CommonClustering
 import argparse
 import os
 import pickle
