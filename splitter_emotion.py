@@ -33,6 +33,7 @@ if os.path.exists(features_path):
 else:
     embeds = [extract_wav(wav_fpath) for wav_fpath in \
             tqdm(wav_fpaths, f"Preprocessing wavs ({len(wav_fpaths)} utterances)")] 
+    embeds = np.concatenate(embeds,axis=0)
     with open(features_path, 'wb') as f:
         pickle.dump(embeds, f)
 
