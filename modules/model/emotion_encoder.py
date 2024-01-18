@@ -89,7 +89,7 @@ def process_func(
 
 
 def extract_wav(path):
-    wav, sr = librosa.load(path, 16000)
+    wav, sr = librosa.load(path, sr = 16000)
     emb = process_func(np.expand_dims(wav, 0), sr, embeddings=True)
     return emb
 
