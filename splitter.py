@@ -1,5 +1,6 @@
 import pandas as pd
-from resemblyzer import preprocess_wav, VoiceEncoder
+from resemblyzer import preprocess_wav
+from modules.model.voice_encoder import VoiceEncoder
 from pathlib import Path
 from tqdm import tqdm
 import numpy as np
