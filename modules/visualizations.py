@@ -29,6 +29,12 @@ _my_colors = np.array([
 ], dtype=float) / 255
 
 
+def generate_colors(n):
+    cm = plt.get_cmap('gist_rainbow')
+    colors = [cm(1.*i/n) for i in range(n)]
+    return colors
+
+
 def play_wav(wav, blocking=True):
     try:
         import sounddevice as sd
@@ -106,6 +112,7 @@ def plot_projections(embeds, speakers, ax=None, colors=None, markers=None, legen
     
     # Draw the projections
     speakers = np.array(speakers)
+    colors = generate_colors(len(np.unique(speakers)))
     colors = colors or _my_colors
     for i, speaker in enumerate(np.unique(speakers)):
         speaker_projs = projs[speakers == speaker]
