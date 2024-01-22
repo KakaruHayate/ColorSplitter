@@ -36,13 +36,17 @@ Implemented automatic optimization of clustering results, no longer need users t
 
 4. The new clustering algorithm is faster, it is recommended to try multiple times.
 
+5. The emotion classification function has now been implemented and can be called through the `--encoder emotion` function. Go to when using https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/tree/main Download `pytorch_Model.bin` is placed in the `wav2vec2-large-robust-12-ft-emotion-msp-dim` directory.
+
+6. You can also use `--encoder mix` to filter audio that matches two similar features at the same time. This feature can help you filter `GPT SoVITS` or `Bert-VITS2.3` prompts. 
+
 # Progress
 
 - [x] **Correctly trained weights**
 - [x] Clustering algorithm optimization
-- [ ] SSL
+- [ ] SSL(Waiting for the wespeaker work done)
 - [x] emotional encoder
-- [ ] embed mix
+- [x] embed mix
 
 # Environment Configuration
 
