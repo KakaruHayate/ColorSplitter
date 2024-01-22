@@ -58,7 +58,7 @@ Then use the following command to install environment dependencies
 pip install -r requirements.txt
 ```
 
-Tips:This tools running in CPU much quicker than GPU
+Tips: If you are only using the timbre encoder, you only need to install the CPU version of pytorch. In other cases, it is recommended to use the GPU version. 
 
 # How to Use
 
