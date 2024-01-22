@@ -1,43 +1,32 @@
 import pandas as pd
-from resemblyzer import preprocess_wav
-from modules.model.voice_encoder import VoiceEncoder
 from pathlib import Path
-from tqdm import tqdm
 import numpy as np
 import matplotlib.pyplot as plt
-from modules.visualizations import *
+from modules.utils import GetEmbeds
+from modules.visualizations import plot_projections
 from modules.cluster import CommonClustering
 import argparse
 import os
-import pickle
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--spk', type=str, help='Speaker name')
 parser.add_argument('--nmin', type=int, default=1, help='minimum number of clusters')
 parser.add_argument('--cluster', type=int, default=1, help='1:SpectralCluster, 2:UmapHdbscan')
-parser.add_argument('--mer_cosine', type=str, default=None, help='merge similar timbre')
+parser.add_argument('--mer_cosine', type=str, default=None, help='merge similar embeds')
+parser.add_argument('--encoder', type=str, default='timbre', help='encoder type')
 args = parser.parse_args()
 
 Speaker_name = args.spk #Speaker name
 Nmin = args.nmin # set Nmax values
 merge_cos = args.mer_cosine
+encoder_name = args.encoder
 
 data_dir = os.path.join("input", Speaker_name, "raw", "wavs")
 wav_fpaths = list(Path(data_dir).glob("*.wav"))
 
-encoder = VoiceEncoder(weights_fpath="pretrain/encoder_1570000.bak")
+encoder = GetEmbeds(encoder_type=encoder_name, Speaker_name=Speaker_name)
 
-# Check if features already exist
-features_path = os.path.join("input", Speaker_name, "features(timbre).pkl")
-if os.path.exists(features_path):
-    with open(features_path, 'rb') as f:
-        resemblyzer_embeds = pickle.load(f)
-else:
-    wavs = [preprocess_wav(wav_fpath) for wav_fpath in \
-            tqdm(wav_fpaths, f"Preprocessing wavs ({len(wav_fpaths)} utterances)")] 
-    resemblyzer_embeds = np.array(list(map(encoder.embed_utterance, wavs)))
-    with open(features_path, 'wb') as f:
-        pickle.dump(resemblyzer_embeds, f)
+embeds = encoder.__call__(wav_fpaths)
 
 while True:
     if args.cluster == 1:
@@ -52,7 +41,7 @@ while True:
     else:
         raise ValueError('cluster type error')
 
-    labels = Cluster.__call__(resemblyzer_embeds)
+    labels = Cluster.__call__(embeds)
 
     output_dir = f'output/{Speaker_name}'
     if not os.path.exists(output_dir):
@@ -62,10 +51,10 @@ while True:
         'filename': [str(fpath) for fpath in wav_fpaths],
         'clust': labels
     })
-    df.to_csv(f'{output_dir}/clustered_files(timbre).csv', index=False)
+    df.to_csv(f'{output_dir}/clustered_files({encoder_name}).csv', index=False)
 
-    plot_projections(resemblyzer_embeds, labels, title="Embedding projections", cluster_name=cluster_name)
-    plt.savefig(f'{output_dir}/embedding_projections(timbre).png', dpi=600)
+    plot_projections(embeds, labels, title="Embedding projections", cluster_name=cluster_name)
+    plt.savefig(f'{output_dir}/embedding_projections({encoder_name}).png', dpi=600)
     plt.show()
 
     user_input = input("Are you satisfied with the results?/是否满意结果？(y/n): ")
