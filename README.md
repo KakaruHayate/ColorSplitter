@@ -110,3 +110,6 @@ After that, you still need to manually merge the too small clusters to meet the 
 [Resemblyzer](https://github.com/resemble-ai/Resemblyzer/)
 
 [3D-Speaker](https://github.com/alibaba-damo-academy/3D-Speaker/)
+
+[wav2vec2-large-robust-12-ft-emotion-msp-dim](https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim)
+
