@@ -1,6 +1,5 @@
 import pandas as pd
 from pathlib import Path
-import numpy as np
 import matplotlib.pyplot as plt
 from modules.utils import GetEmbeds
 from modules.visualizations import plot_projections
@@ -13,18 +12,19 @@ parser.add_argument('--spk', type=str, help='Speaker name')
 parser.add_argument('--nmin', type=int, default=1, help='minimum number of clusters')
 parser.add_argument('--cluster', type=int, default=1, help='1:SpectralCluster, 2:UmapHdbscan')
 parser.add_argument('--mer_cosine', type=str, default=None, help='merge similar embeds')
-parser.add_argument('--encoder', type=str, default='timbre', help='encoder type')
+parser.add_argument('--encoder', type=int, default=1, help='encoder_type--> 1:timbre, 2:emotion, 3:mix, 4:SpeakerVerification')
+parser.add_argument('--model_id', type=str, default='damo/speech_eres2net_sv_zh-cn_16k-common', help='Model id in modelscope')
 args = parser.parse_args()
 
 Speaker_name = args.spk #Speaker name
 Nmin = args.nmin # set Nmax values
 merge_cos = args.mer_cosine
-encoder_name = args.encoder
+encoder_name = ["timbre", "emotion", "mix", "SpeakerVerification"][args.encoder - 1]
 
 data_dir = os.path.join("input", Speaker_name, "raw", "wavs")
 wav_fpaths = list(Path(data_dir).glob("*.wav"))
 
-encoder = GetEmbeds(encoder_type=encoder_name, Speaker_name=Speaker_name)
+encoder = GetEmbeds(encoder_type=encoder_name, Speaker_name=Speaker_name, model_id=args.model_id)
 
 embeds = encoder.__call__(wav_fpaths)
 

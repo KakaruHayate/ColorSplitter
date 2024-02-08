@@ -10,9 +10,10 @@ class GetEmbeds:
     """ Used to obtain embedding vectors for audio. Directly input wav.
     """
 
-    def __init__(self, encoder_type, Speaker_name):
+    def __init__(self, encoder_type, Speaker_name, model_id):
         self.encoder_type = encoder_type
         self.Speaker_name = Speaker_name
+        self.model_id = model_id
         if self.encoder_type == 'timbre':
             self.encoder = VoiceEncoder(weights_fpath="pretrain/encoder_1570000.bak")
         elif self.encoder_type == 'emotion':
@@ -20,6 +21,8 @@ class GetEmbeds:
         elif self.encoder_type == 'mix':
             self.encoder = VoiceEncoder(weights_fpath="pretrain/encoder_1570000.bak")
             self.emotion_module = importlib.import_module('modules.model.emotion_encoder')
+        elif self.encoder_type == 'SpeakerVerification':
+            self.speaker_verification_module = importlib.import_module('modules.model.SpeakerVerification')
         else:
             raise ValueError(
                 '%s is not currently supported.' % self.encoder_type
@@ -32,6 +35,8 @@ class GetEmbeds:
             embeds = self.emotion_encoder(wav_fpaths)
         if self.encoder_type == 'mix':
             embeds = self.mix_encoder(wav_fpaths)
+        if self.encoder_type == 'SpeakerVerification':
+            embeds = self.SpeakerVerification(wav_fpaths)
         
         return embeds
     
@@ -79,4 +84,7 @@ class GetEmbeds:
                 pickle.dump(embeds, f)
         
         return embeds
+    
+    def SpeakerVerification(self, wav_fpaths):
+        return self.speaker_verification_module.extract_embedding(wav_fpaths, self.Speaker_name, self.model_id)
         

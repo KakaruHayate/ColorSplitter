@@ -32,7 +32,7 @@ class VoiceEncoder(nn.Module):
 
         # Load the pretrained model'speaker weights
         if weights_fpath is None:
-            weights_fpath = Path(__file__).resolve().parent.joinpath("pretrained.pt")
+            weights_fpath = Path("pretrain/pretrained.pt")
         else:
             weights_fpath = Path(weights_fpath)
 
