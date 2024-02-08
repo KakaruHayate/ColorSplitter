@@ -163,3 +163,4 @@ cython_debug/
 /input/*
 /output/*
 /pretrain/wav2vec2-large-robust-12-ft-emotion-msp-dim/*.bin
+/pretrain/speech_eres2net_sv_zh-cn_16k-common/*

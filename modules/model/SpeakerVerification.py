@@ -133,17 +133,22 @@ supports = {
     },
 }
 
+
 def move_folder_contents(source_folder, target_folder):
     os.makedirs(target_folder, exist_ok=True)
+
     for root, dirs, files in os.walk(source_folder):
         relative_path = os.path.relpath(root, source_folder)
         target_path = os.path.join(target_folder, relative_path)
         os.makedirs(target_path, exist_ok=True)
+
         for file in files:
             source_file_path = os.path.join(root, file)
             target_file_path = os.path.join(target_path, file)
             shutil.move(source_file_path, target_file_path)
+
     shutil.rmtree(source_folder)
+
 
 def extract_embedding(wav_fpaths, Speaker_name, model_id):
     if torch.cuda.is_available():
@@ -184,7 +189,7 @@ def extract_embedding(wav_fpaths, Speaker_name, model_id):
     model = conf['model']
     embedding_model = dynamic_import(model['obj'])(**model['args'])
     embedding_model.load_state_dict(pretrained_state)
-    embedding_model.to(device)  # !!!!
+    embedding_model.to(device)
     embedding_model.eval()
 
     def load_wav(wav_file, obj_fs=16000):
@@ -198,7 +203,6 @@ def extract_embedding(wav_fpaths, Speaker_name, model_id):
     feature_extractor = FBank(80, sample_rate=16000, mean_nor=True)
 
     def compute_embedding(wav_file, save=True):
-
         save_path = embedding_dir / (
             '%s.npy' % (os.path.basename(wav_file).rsplit('.', 1)[0]))
         if save and save_path.exists():
@@ -213,8 +217,6 @@ def extract_embedding(wav_fpaths, Speaker_name, model_id):
             embedding = embedding_model(feat).detach().cpu().numpy()
         
         if save:
-            save_path = embedding_dir / (
-            '%s.npy' % (os.path.basename(wav_file).rsplit('.', 1)[0]))
             np.save(save_path, embedding)
         
         return embedding
