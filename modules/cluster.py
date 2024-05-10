@@ -21,7 +21,7 @@ class SpectralCluster:
     This implementation is adapted from https://github.com/speechbrain/speechbrain.
     """
 
-    def __init__(self, min_num_spks=1, max_num_spks=10, pval=0.02, min_pnum=6, oracle_num=None):
+    def __init__(self, min_num_spks=1, max_num_spks=14, pval=0.02, min_pnum=6, oracle_num=None):
         self.min_num_spks = min_num_spks
         self.max_num_spks = max_num_spks
         self.min_pnum = min_pnum
