@@ -8,6 +8,7 @@ from sys import stderr
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.manifold import TSNE
+import json
 
 
 _default_colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
@@ -96,7 +97,7 @@ def plot_histograms(all_samples, ax=None, names=None, title=""):
 
 
 def plot_projections(embeds, speakers, ax=None, colors=None, markers=None, legend=True, 
-                     title="", cluster_name="", **kwargs):
+                     title="", cluster_name="", labels=None, **kwargs):
     if ax is None:
         _, ax = plt.subplots(figsize=(6, 6))
         
@@ -119,8 +120,13 @@ def plot_projections(embeds, speakers, ax=None, colors=None, markers=None, legen
         marker = "o" if markers is None else markers[i]
         label = speaker if legend else None
         ax.scatter(*speaker_projs.T, s=60, c=[colors[i]], marker=marker, label=label, edgecolors='k')
+        if labels is not None:
+            for j, (proj_x, proj_y) in enumerate(speaker_projs):
+                label_index = np.where(speakers == speaker)[0][j]
+                ax.text(proj_x, proj_y, str(labels[label_index]), fontsize=8, ha='right')
         center = speaker_projs.mean(axis=0)
         ax.scatter(*center, s=200, c=[colors[i]], marker="X", edgecolors='k')
+
         
     if legend:
         ax.legend(title="Speakers", ncol=2)
@@ -216,3 +222,18 @@ def plot_embedding_as_heatmap(embed, ax=None, title="", shape=None, color_range=
     ax.set_xticks([]), ax.set_yticks([])
     ax.set_title(title)
 
+
+def process_json_file(file_path):
+    with open(file_path, 'r', encoding='utf-8') as file:
+        data = json.load(file)
+    merged_data = {}
+    for key, value in data.items():
+        if value not in merged_data:
+            merged_data[value] = []
+        merged_data[value].append(key)
+
+    result_str = ["</PAD>"]
+    for keys in merged_data.values():
+        result_str.append(','.join(keys))
+
+    return result_str
