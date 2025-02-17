@@ -2,6 +2,8 @@
 
 ![result](IMG/20240102162212.png)
 
+[webui](https://github.com/KakaruHayate/ColorSplitter/tree/main/viewer)
+
 一个用于分离歌声音色的命令行工具
 
 模型通过52小时303个说话人进行训练
