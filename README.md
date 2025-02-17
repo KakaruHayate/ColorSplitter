@@ -4,9 +4,9 @@
 
 [中文文档](README_CN.md)
 
-A command-line tool for separating vocal timbres
+[webui](https://github.com/KakaruHayate/ColorSplitter/tree/main/viewer)
 
-The encoder model train by total of 303 speakers for 52 hours data 
+A command-line tool for separating vocal timbres
 
 # Introduction
 
