@@ -8,8 +8,6 @@
 
 A command-line tool for separating vocal timbres
 
-The encoder model train by total of 303 speakers for 52 hours data 
-
 # Introduction
 
 ColorSplitter is a command-line tool for classifying the vocal timbre styles of single-speaker data in the pre-processing stage of vocal data.
