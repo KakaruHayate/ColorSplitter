@@ -113,3 +113,4 @@ After that, you still need to manually merge the too small clusters to meet the 
 
 [wav2vec2-large-robust-12-ft-emotion-msp-dim](https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim)
 
+[GTSinger](https://github.com/AaronZ345/GTSinger)
