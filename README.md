@@ -44,7 +44,7 @@ Implemented automatic optimization of clustering results, no longer need users t
 
 - [x] **Correctly trained weights**
 - [x] Clustering algorithm optimization
-- [ ] SSL(Waiting for the wespeaker work done)
+- [ ] ~SSL~
 - [x] emotional encoder
 - [x] embed mix
 
@@ -82,19 +82,8 @@ Tips: This project does not need to read the annotation file (transcriptions.csv
 ```
 The wav files are best already split
 
-**2. (Optional) Exclude outliers as shown in the figure below**
 
-![kick](IMG/{68AAFB0D-E298-4087-B041-3593260314AC}.png)
-
-As shown, cluster 3 is obviously a minority outlier, you can use the following command to separate it from the dataset
-```
-python kick.py --spk <speaker_name> --clust <clust_num>
-```
-The separated data will be saved in `.\input\<speaker_name>_<n_num>_<clust_num>`
-
-Please note that running this step may not necessarily optimize the results
-
-**3. After you select the optimal result you think, run the following command to classify the wav files in the dataset
+**2. After you select the optimal result you think, run the following command to classify the wav files in the dataset**
 ```
 python move_files.py --spk <speaker_name>
 ```
@@ -102,7 +91,7 @@ The classified results will be saved in `.\output\<speaker_name>\<clust_num>`
 After that, you still need to manually merge the too small clusters to meet the training requirements
 
 
-**4. (Optional) Move `clean_csv.py` to the same level as `transcriptions.csv` and run it, you can delete the wav file entries that are not included in the `wavs` folder**
+**3. (Optional) Move `clean_csv.py` to the same level as `transcriptions.csv` and run it, you can delete the wav file entries that are not included in the `wavs` folder**
 
 
 # Based on Project
