@@ -107,3 +107,5 @@ python move_files.py --spk <speaker_name>
 [3D-Speaker](https://github.com/alibaba-damo-academy/3D-Speaker/)
 
 [wav2vec2-large-robust-12-ft-emotion-msp-dim](https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim)
+
+[GTSinger](https://github.com/AaronZ345/GTSinger)
