@@ -34,7 +34,7 @@ ColorSplitter是一个为了在歌声数据的处理前期，对单说话人数�
 
 4.新的聚类算法速度较快，建议多次尝试
 
-5.新版本已支持情绪编码器的使用，可以通过`--encoder emotion`调用。使用时前往https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/tree/main下载`pytorch_model.bin`放置在`pretrain/wav2vec2-large-robust-12-ft-emotion-msp-dim`目录下
+5.新版本已支持情绪编码器的使用，可以通过`--encoder emotion`调用。使用时前往 https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/tree/main 下载 `pytorch_model.bin` 放置在 `pretrain/wav2vec2-large-robust-12-ft-emotion-msp-dim` 目录下
 
 6.你也可以用`--encoder mix`筛选同时符合两个特征相似的音频，这个功能可以帮助你筛选`GPT SoVITS`和`BertVITS2.3`的参考音频
 
