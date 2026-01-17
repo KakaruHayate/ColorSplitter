@@ -42,7 +42,7 @@ ColorSplitter是一个为了在歌声数据的处理前期，对单说话人数�
 
 - [x] **正确训练的权重**
 - [x] 聚类算法优化
-- [ ] SSL（摆了，等we-net更新直接搬过来）
+- [ ] ~SSL~
 - [x] emotional encoder
 - [x] embed mix
 
@@ -79,26 +79,15 @@ tips:本项目并不需要读取Diffsinger数据集的标注文件（transcripti
 ```
 其中wav文件最好已经进行过切分
 
-**2.（可选）剔除如下图所示的离群点**
+**2.选定你认为的最优结果后，运行以下命令将数据集中的wav文件分类**
 
-![kick](IMG/{68AAFB0D-E298-4087-B041-3593260314AC}.png)
-
-如同所示，簇3明显为少数离群点，可以使用以下命令将其从数据集中分离
-```
-python kick.py --spk <speaker_name> --clust <clust_num>
-```
-被分离出的数据将保存在`.\input\<speaker_name>_<clust_num>`
-
-请注意运行此步骤未必会对结果产生正向优化
-
-**3.选定你认为的最优结果后，运行以下命令将数据集中的wav文件分类
 ```
 python move_files.py --spk <speaker_name>
 ```
 分类后结果将保存到`.\output\<speaker_name>\<clust_num>`中
 在那之后还需要人工对过小的簇进行归并，以达到训练的需求
 
-**4.（可选）将`clean_csv.py`移动到与`transcriptions.csv`同级后运行，可以删除`wavs`文件夹中没有包含的wav文件条目**
+**3.（可选）将`clean_csv.py`移动到与`transcriptions.csv`同级后运行，可以删除`wavs`文件夹中没有包含的wav文件条目**
 
 # 基于项目
 
