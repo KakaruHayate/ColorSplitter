@@ -52,10 +52,11 @@
         "https://github.com/resemble-ai/Resemblyzer/raw/master/resemblyzer/pretrained.pt",
         "https://hf-mirror.com/resemble-ai/Resemblyzer/resolve/main/resemblyzer/pretrained.pt"
       ],
-      "sha256": null,
+      "sha256": "39373b86598fa3da9fcddee6142382efe09777e8d37dc9c0561f41f0070f134e",
       "source": {
         "kind": "upstream",
-        "project": "resemble-ai/Resemblyzer"
+        "project": "resemble-ai/Resemblyzer",
+        "bytes": 17090379
       }
     }
   ],
