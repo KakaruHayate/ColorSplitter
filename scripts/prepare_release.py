@@ -82,6 +82,7 @@ def main(argv: list[str] | None = None) -> int:
 
     manifest: list[dict] = []
     changed = False
+    failed = 0
 
     for entry in registry["encoders"]:
         source = entry.get("source") or {}
@@ -91,11 +92,15 @@ def main(argv: list[str] | None = None) -> int:
         if args.check:
             if not target.exists():
                 print(f"MISSING  {entry['file']}")
+                failed += 1
                 continue
             actual = sha256_of(target)
             recorded = entry.get("sha256")
-            status = "ok" if recorded == actual else "MISMATCH"
-            print(f"{status:<9}{entry['file']}  {actual}")
+            if recorded == actual:
+                print(f"ok       {entry['file']}  {actual}")
+            else:
+                print(f"MISMATCH {entry['file']}  expected {recorded}, got {actual}")
+                failed += 1
             continue
 
         if kind == "git-blob":
@@ -146,7 +151,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"  -> {target} ({size} bytes) sha256={digest[:16]}…")
 
     if args.check:
-        return 0
+        return 1 if failed else 0
 
     if changed:
         REGISTRY_PATH.write_text(

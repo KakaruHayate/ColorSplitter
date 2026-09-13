@@ -42,8 +42,8 @@ def project(
     if method == "tsne":
         from sklearn.manifold import TSNE
 
-        # perplexity must stay below the sample count
-        perplexity = kwargs.pop("perplexity", min(30.0, max(5.0, (X.shape[0] - 1) / 3.0)))
+        # sklearn requires perplexity < n_samples
+        perplexity = kwargs.pop("perplexity", min(30.0, max(2.0, (X.shape[0] - 1) / 3.0)))
         coords = TSNE(
             init="pca", perplexity=perplexity, random_state=random_state, **kwargs
         ).fit_transform(X)

@@ -1,0 +1,75 @@
+{
+  "version": 3,
+  "_comment": [
+    "Encoder weights live in pretrain/ and are committed to the repository.",
+    "The emotion model is too large to commit and is downloaded on demand",
+    "into a per-user cache (see downloads.emotion below)."
+  ],
+  "mirrors": [
+    "https://hf-mirror.com"
+  ],
+  "encoders": [
+    {
+      "id": "timbre-v1",
+      "file": "timbre-v1.pt",
+      "purpose": "timbre",
+      "default": true,
+      "step": 1570001,
+      "sha256": "7e975269badb2325bea04d2cec58218901d791aeb6b8d622f0136d45282a3cac",
+      "source": {
+        "kind": "git-blob",
+        "commit": "eaed7bd",
+        "path": "pretrain/encoder_1570000.bak",
+        "blob": "e8560833efe9e9e0f0bda3cba03311a0fe5f201f",
+        "bytes": 17100415,
+        "sha256": "7e975269badb2325bea04d2cec58218901d791aeb6b8d622f0136d45282a3cac",
+        "note": "Recovered from git history; the blob id plus hash make the recovery verifiable."
+      }
+    },
+    {
+      "id": "timbre-alt-v1",
+      "file": "timbre-alt-v1.pt",
+      "purpose": "timbre",
+      "default": false,
+      "step": 165000,
+      "sha256": "0e5d54cd75ec4751e5db94eb16933f4b705b3884b8afbb1736d85cae2be7c7e5",
+      "source": {
+        "kind": "git-blob",
+        "commit": "793afcf",
+        "path": "pretrain/encoder_1570000.bak",
+        "blob": "f25b814ed4b69a1c7b61f6f956947100abd51a0f",
+        "bytes": 17095286,
+        "sha256": "0e5d54cd75ec4751e5db94eb16933f4b705b3884b8afbb1736d85cae2be7c7e5",
+        "note": "The filename said 1570000 but the checkpoint's own step counter reads 165000."
+      }
+    },
+    {
+      "id": "speaker-upstream-v1",
+      "file": "speaker-upstream-v1.pt",
+      "purpose": "speaker",
+      "default": false,
+      "urls": [
+        "https://github.com/resemble-ai/Resemblyzer/raw/master/resemblyzer/pretrained.pt",
+        "https://hf-mirror.com/resemble-ai/Resemblyzer/resolve/main/resemblyzer/pretrained.pt"
+      ],
+      "sha256": null,
+      "source": {
+        "kind": "upstream",
+        "project": "resemble-ai/Resemblyzer"
+      }
+    }
+  ],
+  "downloads": {
+    "emotion": {
+      "repo": "audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim",
+      "revision": "main",
+      "target": "emotion",
+      "files": [
+        "config.json",
+        "preprocessor_config.json",
+        "vocab.json",
+        "model.safetensors"
+      ]
+    }
+  }
+}

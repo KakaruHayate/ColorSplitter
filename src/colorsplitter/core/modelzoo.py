@@ -82,17 +82,23 @@ def default_cache_dir() -> Path:
 
 
 def default_registry_path() -> Path:
-    """``models/registry.json`` shipped with the repo."""
+    """``registry.json`` shipped with the package/repo.
+
+    Resolution order: ``COLORSPLITTER_REGISTRY`` env var, then the repo root
+    (running from a checkout), then the package's own copy (wheel install).
+    """
     env = os.environ.get("COLORSPLITTER_REGISTRY")
     if env:
         return Path(env).expanduser()
-    for candidate in (
+    candidates = [
         Path(__file__).resolve().parents[3] / "models" / "registry.json",
+        Path(__file__).resolve().parents[1] / "data" / "registry.json",
         Path.cwd() / "models" / "registry.json",
-    ):
+    ]
+    for candidate in candidates:
         if candidate.exists():
             return candidate
-    return Path(__file__).resolve().parents[1] / "data" / "registry.json"
+    return candidates[0]
 
 
 # --- hub host resolution ----------------------------------------------------
@@ -291,25 +297,18 @@ def _http_get(url: str, dest: Path, resume_from: int = 0, timeout: int = _FULL_T
         headers["Range"] = f"bytes={resume_from}-"
     request = urllib.request.Request(url, headers=headers)
     with urllib.request.urlopen(request, timeout=timeout) as response, open(dest, "ab") as out:
-        expected = int(response.headers.get("Content-Length") or 0)
-        if resume_from and expected and resume_from + expected != _total_size(response, resume_from):
-            # Server ignored the Range header; drop the partial and start over.
-            raise urllib.error.ContentTooShortError(f"server ignored Range for {url}", None)
+        if resume_from and getattr(response, "status", 200) == 200:
+            # Server answered 200 (not 206 Partial Content), meaning it ignored
+            # the Range header. Appending the full body to the partial file
+            # would produce a corrupt result.
+            raise urllib.error.ContentTooShortError(
+                f"server ignored Range header for {url}", None
+            )
         while True:
             block = response.read(_CHUNK)
             if not block:
                 break
             out.write(block)
-
-
-def _total_size(response, resume_from: int) -> int:
-    content_range = response.headers.get("Content-Range") or ""
-    if "/" in content_range:
-        try:
-            return int(content_range.rsplit("/", 1)[1])
-        except ValueError:
-            pass
-    return resume_from + int(response.headers.get("Content-Length") or 0)
 
 
 def download_file(

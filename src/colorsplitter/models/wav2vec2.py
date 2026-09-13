@@ -451,7 +451,15 @@ class Wav2Vec2ForSpeechClassification(nn.Module):
             state = load_safetensors(safetensors_path)
             source = safetensors_path.name
         elif bin_path.exists():
-            state = torch.load(bin_path, map_location="cpu", weights_only=False)
+            try:
+                state = torch.load(bin_path, map_location="cpu", weights_only=True)
+            except Exception:
+                log.warning(
+                    "%s requires weights_only=False; "
+                    "only load checkpoints from a trusted source",
+                    bin_path.name,
+                )
+                state = torch.load(bin_path, map_location="cpu", weights_only=False)
             state = state.get("state_dict", state) if isinstance(state, dict) else state
             source = bin_path.name
         else:

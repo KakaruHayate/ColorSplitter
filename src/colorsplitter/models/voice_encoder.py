@@ -20,6 +20,7 @@ partials, then L2-normalised again.
 from __future__ import annotations
 
 import logging
+import pickle
 from collections.abc import Callable, Sequence
 from pathlib import Path
 from time import perf_counter as timer
@@ -90,7 +91,15 @@ class VoiceEncoder(nn.Module):
                 )
 
             start = timer()
-            checkpoint = torch.load(weights_fpath, map_location="cpu", weights_only=False)
+            try:
+                checkpoint = torch.load(weights_fpath, map_location="cpu", weights_only=True)
+            except pickle.UnpicklingError:
+                log.warning(
+                    "checkpoint %s requires weights_only=False; "
+                    "only load checkpoints from a trusted source",
+                    weights_fpath.name,
+                )
+                checkpoint = torch.load(weights_fpath, map_location="cpu", weights_only=False)
             state = (
                 checkpoint.get("model_state", checkpoint)
                 if isinstance(checkpoint, dict)

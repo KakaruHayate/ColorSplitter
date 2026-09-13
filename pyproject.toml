@@ -46,6 +46,7 @@ where = ["src"]
 [tool.setuptools.package-data]
 "colorsplitter.web" = ["static/**/*"]
 "colorsplitter.training" = ["configs/*.yaml"]
+"colorsplitter.data" = ["registry.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

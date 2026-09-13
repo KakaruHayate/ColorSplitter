@@ -92,7 +92,7 @@ class _EncoderRunner:
         self.config = config
         self.registry = registry
         self._voice = None
-        self._emotion = None
+        self._emotion_enc = None
         self._weights_key = "none"
 
     @property
@@ -117,14 +117,14 @@ class _EncoderRunner:
         return self._voice
 
     def _emotion(self):
-        if self._emotion is None:
+        if self._emotion_enc is None:
             from ..models.emotion_encoder import EmotionEncoder
             from .modelzoo import fetch_emotion_model
 
             model_dir = fetch_emotion_model(self.registry, cache_dir=self.config.cache_dir)
-            self._emotion = EmotionEncoder(model_dir, device=self.config.device)
+            self._emotion_enc = EmotionEncoder(model_dir, device=self.config.device)
             self._weights_key = f"{self._weights_key}+emotion"
-        return self._emotion
+        return self._emotion_enc
 
     def embed_wavs(self, wavs: Sequence[np.ndarray], progress: ProgressFn | None) -> np.ndarray:
         encoder = self.config.encoder
@@ -140,8 +140,8 @@ class _EncoderRunner:
                 )
             )
         if encoder in ("emotion", "mix"):
-            self._emotion()
-            rows = [np.asarray(self._emotion.embed_waveform(w)).reshape(-1) for w in wavs]
+            enc = self._emotion()
+            rows = [np.asarray(enc.embed_waveform(w)).reshape(-1) for w in wavs]
             blocks.append(np.stack(rows).astype(np.float32) if rows else np.zeros((0, 0), np.float32))
         if not blocks:
             raise ValueError(f"encoder {encoder!r} produced nothing")

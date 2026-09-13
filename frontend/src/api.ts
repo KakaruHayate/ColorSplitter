@@ -139,7 +139,10 @@ export function watchTask(
       /* ignore malformed frames */
     }
   }
-  source.onerror = () => source.close()
+  source.onerror = () => {
+    onEvent({ type: 'closed', status: 'error', error: 'progress stream disconnected' })
+    source.close()
+  }
   return () => source.close()
 }
 
