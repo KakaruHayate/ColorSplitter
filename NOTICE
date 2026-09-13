@@ -1,0 +1,70 @@
+# Third-party notices
+
+ColorSplitter is MIT licensed (see `LICENSE`). It contains code and model
+definitions derived from the following projects. Attribution is kept here and
+repeated in the file headers where the code lives.
+
+---
+
+## Resemblyzer — MIT
+
+<https://github.com/resemble-ai/Resemblyzer>
+
+Used for:
+
+* `src/colorsplitter/core/audio.py` — the `preprocess_wav`, `normalize_volume`,
+  `trim_long_silences` and `wav_to_mel_spectrogram` implementations are inlined
+  from `resemblyzer/audio.py`. The librosa calls are kept argument-for-argument
+  identical so that embeddings stay compatible with existing checkpoints.
+* `src/colorsplitter/core/hparams.py` — audio and model hyper-parameters.
+* `src/colorsplitter/models/voice_encoder.py` — the `VoiceEncoder` network
+  definition, including `compute_partial_slices` and `embed_utterance`.
+* The optional `speaker-upstream-v1` weight (`resemblyzer/pretrained.pt`).
+
+The `Resemblyzer` *package* is deliberately not a dependency: only the parts
+actually used are vendored, so the install does not pull in the whole project
+and its transitive requirements.
+
+---
+
+## 3D-Speaker — Apache License 2.0
+
+<https://github.com/alibaba-damo-academy/3D-Speaker>
+
+Used for:
+
+* `src/colorsplitter/core/cluster.py` — `SpectralCluster` and `UmapHdbscan`,
+  themselves adapted from SpeechBrain's spectral clustering implementation.
+
+The clustering behaviour is preserved. `p_pruning` is vectorised and the probe
+matrix is optionally sparsified for the eigensolver; `tests/test_cluster_equivalence.py`
+pins the results against a verbatim copy of the original implementation.
+
+---
+
+## wav2vec2-large-robust-12-ft-emotion-msp-dim
+
+<https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim>
+
+Used for the `emotion` encoder. The model weights are downloaded on demand and
+are not redistributed here; see the model card for their terms.
+
+`src/colorsplitter/models/wav2vec2.py` reimplements the wav2vec2 trunk against
+that checkpoint. The graph was written with reference to HuggingFace
+Transformers' `modeling_wav2vec2.py` and
+`feature_extraction_wav2vec2.py` (Apache License 2.0,
+<https://github.com/huggingface/transformers>), in particular the
+weight-normalisation convention and the input normalisation, so that the
+numerics match. Transformers is **not** a runtime dependency.
+
+`src/colorsplitter/models/safetensors.py` is an independent minimal reader for
+the safetensors format (see <https://github.com/huggingface/safetensors>,
+Apache License 2.0), written to avoid pulling in another package.
+
+---
+
+## Encoder checkpoints
+
+The bundled training lineage descends from CorentinJ's Real-Time-Voice-Cloning
+(<https://github.com/CorentinJ/Real-Time-Voice-Cloning>, MIT), specifically its
+speaker-encoder training and GE2E objective.

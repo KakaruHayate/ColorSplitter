@@ -1,100 +1,89 @@
 # ColorSplitter
 
-![result](IMG/20240102162212.png)
+[English](README.md)
 
-[webui](https://github.com/KakaruHayate/ColorSplitter/tree/main/viewer)
+面向**单说话人歌声数据**的音色聚类与筛选工具。
 
-一个用于分离歌声音色的命令行工具
+给定一个目录，它会递归找出其中所有音频，逐个提取音色 embedding 并聚类，然后用一张可交互的散点图把结果摆在你面前 —— 你可以点任意一个点直接试听、手动调整簇归属，最后按簇把文件写回磁盘。
 
-# 介绍
+典型用途：训练前把一位歌手的数据按音区/风格拆开，或筛掉音色与整体不一致的录音。
 
-ColorSplitter是一个为了在歌声数据的处理前期，对单说话人数据的音色风格进行分类的命令行工具
+**需要说明的一点**：本工具把说话人确认（speaker verification）的技术用在了歌声上。歌声的音色变化与声纹差异相关，但并不等同，这一领域尚无定论。它足够有用，但不是一个已解决的问题。
 
-对于不需要进行风格分类的场合，使用本工具进行数据筛选，也可以减轻模型的音色表现不稳定问题
+---
 
-**请注意**，本项目基于说话人确认（Speaker Verification）技术，目前并不确定唱歌的音色变化是与声纹差异完全相关，just for fun：)
+## 安装
 
-目前该领域研究仍然匮乏，抛砖引玉
-
-感谢社区用户：洛泠羽
-
-# 新版本特性
-
-实装了聚类结果自动优化，不再需要用户自己判断聚类最优结果
-
-`splitter.py`删除了`--nmax`参数，添加了`--nmin`（最小音色类型数量，cluster参数为2时无效）`--cluster`（聚类方式，1:SpectralCluster, 2:UmapHdbscan），`--mer_cosine`合并过于相似的簇
-
-**新版本使用技巧**
-
-1.默认参数直接指定说话人运行`splitter.py`
-
-2.如果结果只有一个簇，观察分布图，将`--nmin`设为你认为合理的数量，再次运行`splitter.py`
-
-3.实际测试下`--nmin`的最优值可能比想象的要小
-
-4.新的聚类算法速度较快，建议多次尝试
-
-5.新版本已支持情绪编码器的使用，可以通过`--encoder emotion`调用。使用时前往 https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/tree/main 下载 `pytorch_model.bin` 放置在 `pretrain/wav2vec2-large-robust-12-ft-emotion-msp-dim` 目录下
-
-6.你也可以用`--encoder mix`筛选同时符合两个特征相似的音频，这个功能可以帮助你筛选`GPT SoVITS`和`BertVITS2.3`的参考音频
-
-# 进展
-
-- [x] **正确训练的权重**
-- [x] 聚类算法优化
-- [ ] ~SSL~
-- [x] emotional encoder
-- [x] embed mix
-
-# 环境配置
-
-`python3.8`下使用正常，请先安装[Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
-
-之后使用以下命令安装环境依赖
-
-```
-pip install -r requirements.txt
-```
-注意：如果你只是用音色编码器则只需要安装CPU版本的pytorch，其他情况下建议使用GPU版本
-
-# 如何使用
-
-**1.将你制作好的Diffsinger数据集移动到`.\input`文件夹下，运行以下命令**
-
-```
-python splitter.py --spk <speaker_name> --nmin <'N'_min_num>
+```bash
+pip install -e ".[all]"          # 全部功能
+pip install -e .                 # 仅音色编码器，不装 torch
 ```
 
-其中`--spk`后输入说话人名称，`--nmin`后输入最小音色类型数量（最小1最大14默认1）
+可选依赖组：`cluster`（UMAP + HDBSCAN）、`emotion`、`train`、`web`、`vad`（与参考实现一致的静音裁剪）、`dev`。
 
-tips:本项目并不需要读取Diffsinger数据集的标注文件（transcriptions.csv），所以保证只要文件结构如下所示就可以正常工作
+读取 `.m4a` / `.mp3` / `.flac` 等格式需要解码器：`PATH` 上有 `ffmpeg` 即可通吃；`libsndfile`（随 `soundfile` 附带）覆盖大部分。
+
+## 使用
+
+```bash
+cs serve                          # 浏览器界面，http://127.0.0.1:8000
 ```
-    - input
-        - <speaker_name>
-            - raw
-                - wavs
-                    - audio1.wav
-                    - audio2.wav
-                    - ...
+
+或走命令行：
+
+```bash
+cs scan  ./my-singing-data                     # 看看抓到了什么
+cs run   ./my-singing-data --nmin 2            # 提特征、聚类，导出 CSV
+cs run   ./my-singing-data --nmin 2 --export   # 同时按簇写回磁盘
+cs weights list                                # 有哪些权重可用
 ```
-其中wav文件最好已经进行过切分
 
-**2.选定你认为的最优结果后，运行以下命令将数据集中的wav文件分类**
+**推荐用 WebUI**：试听和改簇都在那里完成。它做的每件事 `cs` 也都能做，所以工具依然可脚本化。
+
+## 工作流程
 
 ```
-python move_files.py --spk <speaker_name>
+扫描 → 提特征 → 聚类 → 降维 → 审阅 → 导出
 ```
-分类后结果将保存到`.\output\<speaker_name>\<clust_num>`中
-在那之后还需要人工对过小的簇进行归并，以达到训练的需求
 
-**3.（可选）将`clean_csv.py`移动到与`transcriptions.csv`同级后运行，可以删除`wavs`文件夹中没有包含的wav文件条目**
+* **扫描** —— 递归遍历你指定的目录。**不假设任何数据集结构**：不读标注文件，不要求固定目录名，只有音频本身重要。
+* **提特征** —— 每个文件得到一个向量。四种编码器：`timbre`（默认）、`speaker`、`emotion`、`mix`。
+* **聚类** —— 谱聚类，或 UMAP + HDBSCAN。算法固定不改，原因见 [docs/design.md](docs/design.md)。
+* **降维** —— 给你看的二维投影（t-SNE / UMAP / PCA）。
+* **审阅** —— 点选试听、框选批量、改簇归属、改名、合并、拆分、撤销。
+* **导出** —— 默认 copy，可选 move，落到 `output/<簇号>/`。
 
-# 基于项目
+## 权重
 
-[Resemblyzer](https://github.com/resemble-ai/Resemblyzer/)
+权重**不进仓库**：首次使用时下载到本地缓存，并做 SHA-256 校验。清单见 `models/registry.json`。
 
-[3D-Speaker](https://github.com/alibaba-damo-academy/3D-Speaker/)
+| id | 用途 | 说明 |
+|---|---|---|
+| `timbre-v1` | 音色 | 默认，在 `pretrain/` |
+| `timbre-alt-v1` | 音色 | 备选 checkpoint，区分度较弱 |
+| `speaker-upstream-v1` | 说话人身份 | 上游 Resemblyzer 官方权重，按需下载 |
 
-[wav2vec2-large-robust-12-ft-emotion-msp-dim](https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim)
+`timbre` 和 `speaker` 回答的是**不同的问题** —— 前者分离同一歌手的音区，后者区分不同歌手。按需选择。
 
-[GTSinger](https://github.com/AaronZ345/GTSinger)
+权重来源、缓存与镜像见 [docs/weights.md](docs/weights.md)。
+
+## 训练
+
+训练代码位于 `src/colorsplitter/training/`，完整可运行；本仓库**不包含任何训练过程**。它期望目录命名为 `<歌手>_<音色>`，其采样器会刻意让每个 batch 里包含**同一位歌手**的多个音色 —— 这些最难区分的样本对，正是教会模型"音色"这一维度的关键。
+
+详见 [docs/training.md](docs/training.md)。
+
+## 文档
+
+| | |
+|---|---|
+| [installation.md](docs/installation.md) | 环境、可选依赖、解码器、排错 |
+| [cli.md](docs/cli.md) | 全部命令与参数 |
+| [webui.md](docs/webui.md) | 界面说明与审阅流程 |
+| [training.md](docs/training.md) | 数据集布局、采样器、配置、断点续训 |
+| [weights.md](docs/weights.md) | 注册表、缓存、镜像、来源 |
+| [design.md](docs/design.md) | 架构、保留了什么、重写了什么 |
+
+## 许可
+
+MIT，见 [LICENSE](LICENSE)。第三方出处见 [NOTICE](NOTICE)。

@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "colorsplitter"
+version = "2.0.0.dev0"
+description = "Timbre clustering and filtering for single-speaker singing datasets"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "scikit-learn>=1.3",
+    "librosa>=0.10",
+    "soundfile>=0.12",
+]
+
+[project.optional-dependencies]
+cluster = ["umap-learn>=0.5.5", "hdbscan>=0.8.33"]
+# The emotion model's wav2vec2 graph is implemented in-tree, so this extra only
+# needs torch -- there is no transformers dependency to keep aligned.
+emotion = ["torch>=2.0"]
+train = ["torch>=2.0"]
+vad = ["webrtcvad-wheels>=2.0.14"]
+web = ["fastapi>=0.110", "uvicorn[standard]>=0.29"]
+dev = ["pytest>=8.0", "ruff>=0.5", "build"]
+all = [
+    "colorsplitter[cluster,emotion,train,web,dev]",
+]
+
+[project.scripts]
+colorsplitter = "colorsplitter.cli.main:main"
+cs = "colorsplitter.cli.main:main"
+
+[project.urls]
+Homepage = "https://github.com/KakaruHayate/ColorSplitter"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"colorsplitter.web" = ["static/**/*"]
+"colorsplitter.training" = ["configs/*.yaml"]
+"colorsplitter.data" = ["registry.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = [
+    "slow: long-running tests (benchmarks, equivalence sweeps)",
+    "gpu: requires a CUDA device",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]

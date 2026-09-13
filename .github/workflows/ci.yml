@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install ruff
+      - run: ruff check src tests scripts
+
+  test:
+    name: tests (no torch)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: sudo apt-get update && sudo apt-get install -y libsndfile1 ffmpeg
+      - run: pip install -e ".[dev,cluster,web]"
+      # torch-dependent tests skip themselves; this run proves the package is
+      # importable and the pipeline works without torch installed at all.
+      - name: assert torch is absent
+        run: python -c "import importlib.util,sys; sys.exit(0 if importlib.util.find_spec('torch') is None else 1)"
+      - run: python -m pytest -m "not slow" --verbose
+      - run: python -c "import colorsplitter, colorsplitter.core.pipeline, colorsplitter.core.cluster, colorsplitter.web.app as a; a.create_app(cache_dir='/tmp/cs-cache')"
+
+  test-torch:
+    name: tests (with torch)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: sudo apt-get update && sudo apt-get install -y libsndfile1 ffmpeg
+      - run: pip install -e ".[dev,cluster,web,emotion]" --extra-index-url https://download.pytorch.org/whl/cpu
+      - run: python -m pytest --verbose
+
+  frontend:
+    name: frontend build is current
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npm run build
+        working-directory: frontend
+      # The built bundle is committed so that end users never need node. If the
+      # committed copy is stale, this fails.
+      - name: committed bundle must match a fresh build
+        run: git diff --exit-code -- src/colorsplitter/web/static

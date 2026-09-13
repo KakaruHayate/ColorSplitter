@@ -1,105 +1,111 @@
 # ColorSplitter
 
-![result](IMG/20240102162212.png)
-
 [中文文档](README_CN.md)
 
-[webui](https://github.com/KakaruHayate/ColorSplitter/tree/main/viewer)
+Timbre clustering and filtering for single-speaker singing datasets.
 
-A command-line tool for separating vocal timbres
+Point it at a directory. It embeds every audio file it finds, clusters the
+embeddings by timbre, shows you the result as an interactive scatter plot where
+you can audition any point, fix up the clusters by hand, and then write the
+files back out grouped by cluster.
 
-# Introduction
+Useful when preparing a dataset: splitting one singer's material into registers
+or styles before training, or filtering out takes whose timbre does not match
+the rest.
 
-ColorSplitter is a command-line tool for classifying the vocal timbre styles of single-speaker data in the pre-processing stage of vocal data.
+**A caveat worth stating.** This is speaker-verification machinery pointed at
+singing. Singing timbre variation and voiceprint difference are related but not
+the same thing, and the field has not settled the question. It works well enough
+to be useful; it is not a solved problem.
 
-For scenarios that do not require style classification, using this tool to filter data can also reduce the problem of unstable timbre performance of the model.
+---
 
-**Please note** that this project is based on Speaker Verification technology, and it is not clear whether the timbre changes of singing are completely related to the voiceprint differences, just for fun :)
+## Install
 
-The research in this field is still scarce, hoping to inspire more ideas.
-
-Thanks to the community user: 洛泠羽
-
-# New version features
-
-Implemented automatic optimization of clustering results, no longer need users to judge the optimal clustering results themselves.
-
-`splitter.py` deleted the `--nmax` parameter, added `--nmin` (minimum number of timbre types, invalid when cluster parameter is 2) `--cluster` (clustering method, 1:SpectralCluster, 2:UmapHdbscan), `--mer_cosine` to merge clusters that are too similar.
-
-**New version tips**
-
-1. Run `splitter.py` directly with the default parameters by specifying the speaker.
-
-2. If the result has only one cluster, observe the distribution map, set `--nmin` to the number you think is reasonable, and run `splitter.py` again.
-
-3. The optimal value of `--nmin` may be smaller than expected in actual tests.
-
-4. The new clustering algorithm is faster, it is recommended to try multiple times.
-
-5. The emotion classification function has now been implemented and can be called through the `--encoder emotion` function. Go to when using https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/tree/main Download `pytorch_Model.bin` is placed in the `wav2vec2-large-robust-12-ft-emotion-msp-dim` directory.
-
-6. You can also use `--encoder mix` to filter audio that matches two similar features at the same time. This feature can help you filter `GPT SoVITS` or `Bert-VITS2.3` prompts. 
-
-# Progress
-
-- [x] **Correctly trained weights**
-- [x] Clustering algorithm optimization
-- [ ] ~SSL~
-- [x] emotional encoder
-- [x] embed mix
-
-# Environment Configuration
-
-It works normally under `python3.8`, please go to install [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
-
-Then use the following command to install environment dependencies
-
-```
-pip install -r requirements.txt
+```bash
+pip install -e ".[all]"          # everything
+pip install -e .                 # timbre encoder only, no torch
 ```
 
-Tips: If you are only using the timbre encoder, you only need to install the CPU version of pytorch. In other cases, it is recommended to use the GPU version. 
+Optional extras: `cluster` (UMAP + HDBSCAN), `emotion`, `train`, `web`, `vad`
+(faithful silence trimming), `dev`.
 
-# How to Use
+Reading `.m4a`, `.mp3`, `.flac` and friends needs a decoder. `ffmpeg` on `PATH`
+covers everything; `libsndfile` (bundled with `soundfile`) covers most.
 
-**1. Move your well-made Diffsinger dataset to the `.\input` folder and run the following command**
+## Use
+
+```bash
+cs serve                          # browser UI on http://127.0.0.1:8000
+```
+
+or from the command line:
+
+```bash
+cs scan  ./my-singing-data                     # what did it find?
+cs run   ./my-singing-data --nmin 2            # embed, cluster, write a CSV
+cs run   ./my-singing-data --nmin 2 --export   # also write out by cluster
+cs weights list                                # what weights exist?
+```
+
+The WebUI is the intended way to work: it is where you actually audition points
+and correct clusters. Everything it does is also available from `cs`, so the
+tool stays scriptable.
+
+## How it works
 
 ```
-python splitter.py --spk <speaker_name> --nmin <'N'_min_num>
+scan → embed → cluster → project → review → export
 ```
 
-Enter the speaker name after `--spk`, and enter the minimum number of timbre types after `--nmin` (minimum 1, maximum 14，default 1)
+* **scan** — walks the directory you name, recursively. No dataset layout is
+  assumed: no annotation files, no required folder names. Only the audio matters.
+* **embed** — each file becomes one vector. Four encoders are available:
+  `timbre` (default), `speaker`, `emotion`, and `mix`.
+* **cluster** — spectral clustering, or UMAP + HDBSCAN. These algorithms are
+  fixed; see [docs/design.md](docs/design.md) for why, and for what did change.
+* **project** — a 2D view for you to look at (t-SNE, UMAP or PCA).
+* **review** — click any point to hear it, drag a box to select, reassign points
+  between clusters, rename, merge, split, undo.
+* **export** — copy (default) or move the files into `output/<cluster>/`.
 
-Tips: This project does not need to read the annotation file (transcriptions.csv) of the Diffsinger dataset, so as long as the file structure is as shown below, it can work normally
-```
-    - input
-        - <speaker_name>
-            - raw
-                - wavs
-                    - audio1.wav
-                    - audio2.wav
-                    - ...
-```
-The wav files are best already split
+## Weights
 
+Weights are **not** stored in this repository; they are downloaded into a local
+cache on first use and verified by SHA-256. `models/registry.json` is the list.
 
-**2. After you select the optimal result you think, run the following command to classify the wav files in the dataset**
-```
-python move_files.py --spk <speaker_name>
-```
-The classified results will be saved in `.\output\<speaker_name>\<clust_num>`
-After that, you still need to manually merge the too small clusters to meet the training requirements
+| id | purpose | notes |
+|---|---|---|
+| `timbre-v1` | timbre | default, in `pretrain/` |
+| `timbre-alt-v1` | timbre | alternative checkpoint, weaker separation |
+| `speaker-upstream-v1` | speaker identity | upstream Resemblyzer encoder, downloaded |
 
+`timbre` and `speaker` answer different questions — separating one singer's
+registers versus telling singers apart. Pick accordingly.
 
-**3. (Optional) Move `clean_csv.py` to the same level as `transcriptions.csv` and run it, you can delete the wav file entries that are not included in the `wavs` folder**
+See [docs/weights.md](docs/weights.md) for provenance, caching and mirrors.
 
+## Training
 
-# Based on Project
+The encoder training code is in `src/colorsplitter/training/` and is complete
+and runnable; no training run is performed as part of this repository. It expects
+directories named `<singer>_<timbre>`, and its sampler deliberately fills each
+batch with several timbres of the *same* singer, because those pairs are the
+hard negatives that teach the model the timbre axis.
 
-[Resemblyzer](https://github.com/resemble-ai/Resemblyzer/)
+See [docs/training.md](docs/training.md).
 
-[3D-Speaker](https://github.com/alibaba-damo-academy/3D-Speaker/)
+## Documentation
 
-[wav2vec2-large-robust-12-ft-emotion-msp-dim](https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim)
+| | |
+|---|---|
+| [installation.md](docs/installation.md) | environments, extras, decoders, troubleshooting |
+| [cli.md](docs/cli.md) | every command and flag |
+| [webui.md](docs/webui.md) | the interface, and the review workflow |
+| [training.md](docs/training.md) | dataset layout, sampler, config, resuming |
+| [weights.md](docs/weights.md) | registry, cache, mirrors, provenance |
+| [design.md](docs/design.md) | architecture, what was kept, what was replaced |
 
-[GTSinger](https://github.com/AaronZ345/GTSinger)
+## Licence
+
+MIT — see [LICENSE](LICENSE). Third-party attribution is in [NOTICE](NOTICE).
