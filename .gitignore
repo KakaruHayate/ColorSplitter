@@ -166,13 +166,10 @@ cython_debug/
 # Agent working notes / local scratch — must never be committed
 .workbuddy/
 
-# Weight binaries are never committed: they are downloaded into a per-user cache
-# and published as release assets. See models/registry.json.
+# The emotion model is downloaded, never committed. The encoder weights in
+# pretrain/ ARE committed — they are the point of the repo.
 /pretrain/wav2vec2-large-robust-12-ft-emotion-msp-dim/*.bin
 /pretrain/wav2vec2-large-robust-12-ft-emotion-msp-dim/*.safetensors
-*.bak
-*.pt
-!/models/registry.json
 
 # Local weights cache, release staging and training runs
 /models/.cache/

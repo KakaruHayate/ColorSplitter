@@ -38,9 +38,9 @@ def ge2e_loss(**kwargs):
 @pytest.mark.parametrize(
     "name,expected",
     [
-        ("ahs-moka_Cheeky", ("ahs-moka", "Cheeky")),
-        ("an-xiao-v2_Airy", ("an-xiao-v2", "Airy")),
-        ("sora", ("sora", "default")),
+        ("vocalist_Soft", ("vocalist", "Soft")),
+        ("vocalist_v2_Belt", ("vocalist_v2", "Belt")),
+        ("soloist", ("soloist", "default")),
         ("a_b_c", ("a_b", "c")),
         ("trailing_", ("trailing_", "default")),
         ("_leading", ("_leading", "default")),

@@ -1,26 +1,21 @@
 # Weights
 
-## Weights are not in this repository
+## The timbre weights are in `pretrain/`
 
-They are downloaded on demand into a per-user cache and verified by SHA-256.
+They are committed to the repository (~17 MB each) so that a clone gives you a
+working tool with no download step.
 
-This is a deliberate reversal. Weights used to be committed directly, which
-meant a weight swap looked like an ordinary source edit. That is how the better
-of the two timbre checkpoints was silently overwritten by a commit whose message
-only mentioned the README — recoverable, but only because git happened to keep
-the blob, and not visible from the history at all.
-
-`models/registry.json` is now the record. For each weight it states:
+`models/registry.json` is the record. For each weight it states:
 
 | field | meaning |
 |---|---|
 | `id` | the name you pass to `--weights` |
-| `file` | filename in the cache |
+| `file` | filename in `pretrain/` (or the cache, for downloaded weights) |
 | `purpose` | `timbre` or `speaker` — they answer different questions |
 | `default` | which one `--encoder timbre` picks with no `--weights` |
 | `step` | the training step the checkpoint itself reports |
-| `sha256` | hash of the published asset; `null` until the assets are staged |
-| `urls` | release asset locations, tried in order |
+| `sha256` | hash of the file, verified on load |
+| `urls` | download locations (only for weights that are not committed) |
 | `source` | provenance: where the weight came from, including the git blob id for archived ones |
 
 ## The weights
@@ -32,8 +27,7 @@ well, which is the entire point.
 
 Recovered from git history: an earlier commit overwrote it, and the registry
 records the blob id (`e8560833…`) along with the SHA-256 of the original bytes so
-that the recovery is verifiable rather than hopeful. `scripts/prepare_release.py`
-performs the recovery and re-derives the hash.
+that the recovery is verifiable rather than hopeful.
 
 ### `timbre-alt-v1`
 
@@ -46,7 +40,7 @@ the default. The file is named for the step counter *inside* the checkpoint
 The upstream Resemblyzer encoder. This one separates *singers*, not registers —
 a different question. Use it when you need to tell performers apart, for
 instance when auditing a mixed dataset. Same architecture, so it drops into the
-same encoder.
+same encoder. Downloaded on first use.
 
 ### The emotion model
 
@@ -57,22 +51,32 @@ with no unpickling of a file we did not produce.
 
 ## Where they live
 
+| weight | location |
+|---|---|
+| `timbre-v1`, `timbre-alt-v1` | `pretrain/` in the repository |
+| `speaker-upstream-v1`, emotion model | per-user cache, downloaded on demand |
+
+Cache directory:
+
 | platform | default |
 |---|---|
 | Windows | `%LOCALAPPDATA%\colorsplitter\weights` |
 | Linux / macOS | `$XDG_CACHE_HOME/colorsplitter/weights`, or `~/.cache/colorsplitter/weights` |
 | either | override with `COLORSPLITTER_HOME` |
 
-## Getting them
-
-```bash
-cs weights list                     # what exists and what it says about itself
-cs weights fetch                    # everything
-cs weights fetch --only emotion     # one thing
-```
-
 A file placed in the cache directory by hand is used as-is, so an offline or
 air-gapped setup works: drop the files in, and no network is touched.
+
+## Getting them
+
+The timbre weights are already in `pretrain/` — no action needed. The other two
+are fetched on demand:
+
+```bash
+cs weights list                     # what exists
+cs weights fetch                    # download speaker + emotion
+cs weights fetch --only emotion     # just the emotion model
+```
 
 ## Mirrors
 
@@ -93,20 +97,5 @@ and a completed file is hashed before it is accepted. A hash mismatch deletes th
 file and reports it — a quiet substitution of a different weight is the failure
 mode worth guarding against.
 
-If `sha256` is `null`, the asset has not been staged yet and no verification
-happens. That means "unchecked", not "fine".
-
-## Publishing a release
-
-```bash
-python scripts/prepare_release.py            # stage assets and fill in hashes
-python scripts/prepare_release.py --check    # verify what is already staged
-```
-
-The script recovers archived blobs, verifies them against the recorded hash
-before touching anything, strips optimiser state, writes the assets to
-`models/release/`, updates `models/registry.json` and emits a manifest for the
-release notes.
-
-The optimiser state is roughly half the file size and is no use for inference;
-stripping it is why the published assets are smaller than the raw checkpoints.
+If `sha256` is `null`, the asset has not been verified. That means "unchecked",
+not "fine".

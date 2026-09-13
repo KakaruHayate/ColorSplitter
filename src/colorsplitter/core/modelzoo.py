@@ -189,8 +189,16 @@ class RegistryEntry:
         return self.default
 
     def local_candidates(self, cache_dir: Path) -> list[Path]:
-        """Places a pre-placed file is honoured from, before any download."""
-        return [cache_dir / self.file, Path(self.file)]
+        """Places a pre-placed file is honoured from, before any download.
+
+        ``cache_dir`` comes first so that an explicitly provided weight overrides
+        the one shipped in ``pretrain/``.
+        """
+        return [
+            cache_dir / self.file,
+            Path("pretrain") / self.file,
+            Path(self.file),
+        ]
 
 
 @dataclass

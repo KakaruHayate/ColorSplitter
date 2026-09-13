@@ -59,13 +59,13 @@ cs weights list                                # 有哪些权重可用
 
 | id | 用途 | 说明 |
 |---|---|---|
-| `timbre-v1` | 音色 | 默认 |
+| `timbre-v1` | 音色 | 默认，在 `pretrain/` |
 | `timbre-alt-v1` | 音色 | 备选 checkpoint，区分度较弱 |
-| `speaker-upstream-v1` | 说话人身份 | 上游 Resemblyzer 官方权重 |
+| `speaker-upstream-v1` | 说话人身份 | 上游 Resemblyzer 官方权重，按需下载 |
 
 `timbre` 和 `speaker` 回答的是**不同的问题** —— 前者分离同一歌手的音区，后者区分不同歌手。按需选择。
 
-权重的来源、缓存与镜像见 [docs/weights.md](docs/weights.md)。
+权重来源、缓存与镜像见 [docs/weights.md](docs/weights.md)。
 
 ## 训练
 

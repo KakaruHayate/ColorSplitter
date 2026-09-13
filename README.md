@@ -76,9 +76,9 @@ cache on first use and verified by SHA-256. `models/registry.json` is the list.
 
 | id | purpose | notes |
 |---|---|---|
-| `timbre-v1` | timbre | default |
+| `timbre-v1` | timbre | default, in `pretrain/` |
 | `timbre-alt-v1` | timbre | alternative checkpoint, weaker separation |
-| `speaker-upstream-v1` | speaker identity | upstream Resemblyzer encoder |
+| `speaker-upstream-v1` | speaker identity | upstream Resemblyzer encoder, downloaded |
 
 `timbre` and `speaker` answer different questions — separating one singer's
 registers versus telling singers apart. Pick accordingly.

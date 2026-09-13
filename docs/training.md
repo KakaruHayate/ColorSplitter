@@ -29,9 +29,9 @@ A directory is a class. The name is split on the **last** underscore, so singer
 names containing hyphens or version suffixes survive intact:
 
 ```
-ahs-moka_Cheeky    ->  singer "ahs-moka",    timbre "Cheeky"
-my-singer_v2_Soft  ->  singer "my-singer_v2", timbre "Soft"
-solo               ->  singer "solo",         timbre "default"
+vocalist_Soft     ->  singer "vocalist",     timbre "Soft"
+vocalist_v2_Belt  ->  singer "vocalist_v2",  timbre "Belt"
+solo              ->  singer "solo",         timbre "default"
 ```
 
 ### Why the class is `<singer>_<timbre>` and not `<singer>`
