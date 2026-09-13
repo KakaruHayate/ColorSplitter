@@ -30,7 +30,6 @@ import json
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 import torch
 import torch.nn as nn
@@ -75,7 +74,7 @@ class Wav2Vec2Config:
         return len(self.conv_dim)
 
     @classmethod
-    def from_json(cls, path: Path) -> "Wav2Vec2Config":
+    def from_json(cls, path: Path) -> Wav2Vec2Config:
         raw = json.loads(Path(path).read_text(encoding="utf-8"))
         label2id = raw.get("label2id") or {}
         names = [name for name, _ in sorted(label2id.items(), key=lambda kv: kv[1])]
@@ -436,7 +435,7 @@ class Wav2Vec2ForSpeechClassification(nn.Module):
         return pooled, self.classifier(pooled)
 
     @classmethod
-    def from_pretrained(cls, model_dir: Path) -> tuple["Wav2Vec2ForSpeechClassification", dict]:
+    def from_pretrained(cls, model_dir: Path) -> tuple[Wav2Vec2ForSpeechClassification, dict]:
         """Build the model and load a checkpoint from a HF-style directory.
 
         Accepts ``model.safetensors`` (preferred: no unpickling) or

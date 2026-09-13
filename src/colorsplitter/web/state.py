@@ -13,9 +13,10 @@ from __future__ import annotations
 import hashlib
 import logging
 import threading
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional, Sequence
+from typing import Any
 
 import numpy as np
 
@@ -40,15 +41,15 @@ class SessionState:
     """Mutable state for one running instance."""
 
     cache_dir: Path
-    registry_path: Optional[Path] = None
+    registry_path: Path | None = None
     embed_config: EmbedConfig = field(default_factory=EmbedConfig)
 
-    dataset: Optional[AudioDataset] = None
-    embeddings: Optional[EmbeddingSet] = None
-    clusters: Optional[ClusterResult] = None
-    projection: Optional[Projection] = None
-    history: Optional[labelops.LabelHistory] = None
-    export_report: Optional[ExportReport] = None
+    dataset: AudioDataset | None = None
+    embeddings: EmbeddingSet | None = None
+    clusters: ClusterResult | None = None
+    projection: Projection | None = None
+    history: labelops.LabelHistory | None = None
+    export_report: ExportReport | None = None
 
     projection_method: str = "tsne"
     cluster_method: str = "spectral"
@@ -96,9 +97,9 @@ class SessionState:
         clusters: ClusterResult,
         projection: Projection,
         *,
-        cluster_method: Optional[str] = None,
-        cluster_params: Optional[dict] = None,
-        projection_method: Optional[str] = None,
+        cluster_method: str | None = None,
+        cluster_params: dict | None = None,
+        projection_method: str | None = None,
     ) -> None:
         with self._lock:
             self.embeddings = embeddings
@@ -112,7 +113,7 @@ class SessionState:
             if projection_method:
                 self.projection_method = projection_method
 
-    def import_embeddings(self, embeds: np.ndarray, keys: Optional[Sequence[str]] = None) -> None:
+    def import_embeddings(self, embeds: np.ndarray, keys: Sequence[str] | None = None) -> None:
         """Load an external embedding matrix, bypassing inference."""
         embeds = np.asarray(embeds, dtype=np.float32)
         if embeds.ndim != 2:
@@ -139,13 +140,13 @@ class SessionState:
         for item in self.dataset.items:
             self._media[media_token(item.key)] = item.path
 
-    def media_path(self, token: str) -> Optional[Path]:
+    def media_path(self, token: str) -> Path | None:
         return self._media.get(token)
 
     # --- labels -------------------------------------------------------------
 
     @property
-    def labels(self) -> Optional[np.ndarray]:
+    def labels(self) -> np.ndarray | None:
         return self.history.current if self.history is not None else None
 
     def _require(self) -> tuple[EmbeddingSet, labelops.LabelHistory]:
@@ -175,7 +176,7 @@ class SessionState:
         _, history = self._require()
         return history.push(labelops.rename_cluster(history.current, int(old), int(new)))
 
-    def remove(self, cluster: int, reassign_to: Optional[int] = None) -> np.ndarray:
+    def remove(self, cluster: int, reassign_to: int | None = None) -> np.ndarray:
         _, history = self._require()
         return history.push(labelops.remove_cluster(history.current, int(cluster), reassign_to=reassign_to))
 

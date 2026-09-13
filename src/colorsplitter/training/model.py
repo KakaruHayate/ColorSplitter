@@ -9,7 +9,6 @@ class directly and only adds what training needs.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 import torch
 
@@ -20,8 +19,8 @@ __all__ = ["build_encoder", "load_checkpoint", "save_checkpoint"]
 
 def build_encoder(
     *,
-    device: Optional[str] = None,
-    resume_from: Optional[Path] = None,
+    device: str | None = None,
+    resume_from: Path | None = None,
 ) -> VoiceEncoder:
     """Create an encoder for training.
 
@@ -36,8 +35,8 @@ def build_encoder(
 def load_checkpoint(
     path: Path,
     encoder: VoiceEncoder,
-    optimizer: Optional[torch.optim.Optimizer] = None,
-    similarity: Optional[torch.nn.Module] = None,
+    optimizer: torch.optim.Optimizer | None = None,
+    similarity: torch.nn.Module | None = None,
 ) -> int:
     """Restore model (and optionally optimiser/loss) state; returns the step."""
     checkpoint = torch.load(Path(path), map_location="cpu", weights_only=False)
@@ -58,8 +57,8 @@ def save_checkpoint(
     encoder: VoiceEncoder,
     step: int,
     loss: float,
-    optimizer: Optional[torch.optim.Optimizer] = None,
-    similarity: Optional[torch.nn.Module] = None,
+    optimizer: torch.optim.Optimizer | None = None,
+    similarity: torch.nn.Module | None = None,
 ) -> Path:
     """Write a checkpoint in the historical layout.
 

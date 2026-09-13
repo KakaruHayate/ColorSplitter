@@ -14,7 +14,6 @@ import hashlib
 import json
 import logging
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
 
@@ -62,7 +61,7 @@ class EmbeddingCache:
     ``embeds`` matrix. A change in embedding dimension invalidates the file.
     """
 
-    def __init__(self, path: Path, dim: Optional[int] = None):
+    def __init__(self, path: Path, dim: int | None = None):
         self.path = Path(path)
         self.dim = dim
         self._keys: list[str] = []
@@ -87,14 +86,14 @@ class EmbeddingCache:
             log.info("embedding cache dimension changed, discarding %s", self.path)
             return
         self._keys = keys
-        self._fps = dict(zip(keys, fps))
+        self._fps = dict(zip(keys, fps, strict=True))
         self._rows = [embeds[i] for i in range(embeds.shape[0])]
         self._index = {k: i for i, k in enumerate(keys)}
 
     def __len__(self) -> int:
         return len(self._keys)
 
-    def lookup(self, key: str, fingerprint: str) -> Optional[np.ndarray]:
+    def lookup(self, key: str, fingerprint: str) -> np.ndarray | None:
         pos = self._index.get(key)
         if pos is None or self._fps.get(key) != fingerprint:
             return None
@@ -138,7 +137,7 @@ class ArrayCache:
     def _path(self, digest: str) -> Path:
         return self.directory / f"{digest}.npz"
 
-    def get(self, digest: str) -> Optional[tuple[list[str], np.ndarray]]:
+    def get(self, digest: str) -> tuple[list[str], np.ndarray] | None:
         path = self._path(digest)
         if not path.exists():
             return None

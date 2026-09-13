@@ -20,9 +20,9 @@ from __future__ import annotations
 
 import logging
 import random
+from collections.abc import Iterator, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterator, Optional, Sequence
 
 import numpy as np
 
@@ -116,7 +116,7 @@ class TimbreDataset:
             "timbres_per_singer_max": max(len(v) for v in grouped.values()),
         }
 
-    def load_mel(self, path: Path, rng: random.Random) -> Optional[np.ndarray]:
+    def load_mel(self, path: Path, rng: random.Random) -> np.ndarray | None:
         """Preprocess a clip and cut a fixed-length mel window.
 
         Returns ``(partials_n_frames, mel_n_channels)``, or ``None`` if the clip
@@ -161,7 +161,7 @@ class Ge2eBatchSampler:
         speakers_per_batch: int = 8,
         utterances_per_speaker: int = 4,
         singers_per_batch: int = 4,
-        seed: Optional[int] = None,
+        seed: int | None = None,
     ):
         if speakers_per_batch < 2:
             raise ValueError("speakers_per_batch must be >= 2")

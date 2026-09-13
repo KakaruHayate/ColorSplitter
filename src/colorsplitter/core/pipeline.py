@@ -13,8 +13,8 @@ from __future__ import annotations
 
 import logging
 import shutil
+from collections.abc import Callable, Iterable, Sequence
 from pathlib import Path
-from typing import Callable, Iterable, Optional, Sequence, Union
 
 import numpy as np
 
@@ -43,7 +43,7 @@ ProgressFn = Callable[[str, int, int], None]
 # --- scanning ---------------------------------------------------------------
 
 
-def scan(root: Union[str, Path], extensions: Optional[Iterable[str]] = None) -> AudioDataset:
+def scan(root: str | Path, extensions: Iterable[str] | None = None) -> AudioDataset:
     """Recursively collect every audio file under *root*.
 
     No dataset layout is assumed: whatever directory you point at is walked, and
@@ -73,7 +73,7 @@ def scan(root: Union[str, Path], extensions: Optional[Iterable[str]] = None) -> 
     return AudioDataset(root=base, items=items)
 
 
-def dataset_from_paths(paths: Sequence[Union[str, Path]], root: Optional[Path] = None) -> AudioDataset:
+def dataset_from_paths(paths: Sequence[str | Path], root: Path | None = None) -> AudioDataset:
     """Build a dataset from an explicit list of files (no scanning)."""
     resolved = [Path(p).expanduser().resolve() for p in paths]
     base = Path(root).resolve() if root else (Path(_common_prefix(resolved)) if resolved else Path("."))
@@ -94,7 +94,7 @@ def _common_prefix(paths: Sequence[Path]) -> str:
         return "."
     parts = [p.parts for p in paths]
     shared: list[str] = []
-    for chunk in zip(*parts):
+    for chunk in zip(*parts, strict=False):
         if len(set(chunk)) == 1:
             shared.append(chunk[0])
         else:
@@ -110,10 +110,10 @@ def cluster_embeddings(
     *,
     method: str = "spectral",
     nmin: int = 1,
-    mer_cos: Optional[float] = None,
+    mer_cos: float | None = None,
     max_num_spks: int = 14,
     min_cluster_size: int = 4,
-    oracle_num: Optional[int] = None,
+    oracle_num: int | None = None,
     eigen_solver: str = "auto",
     **kwargs,
 ) -> ClusterResult:
@@ -165,9 +165,9 @@ def cluster_embeddings(
 def project_embeddings(
     embeds: np.ndarray,
     *,
-    keys: Optional[Sequence[str]] = None,
+    keys: Sequence[str] | None = None,
     method: str = "tsne",
-    cache_dir: Optional[Path] = None,
+    cache_dir: Path | None = None,
     use_cache: bool = True,
     **kwargs,
 ) -> Projection:
@@ -198,11 +198,11 @@ _NOISE_DIR = "noise"
 def export_clusters(
     dataset: AudioDataset,
     result: ClusterResult,
-    dest: Union[str, Path],
+    dest: str | Path,
     *,
     mode: str = "copy",
     prefix_keys: bool = False,
-    progress: Optional[ProgressFn] = None,
+    progress: ProgressFn | None = None,
 ) -> ExportReport:
     """Write the audio into ``dest/<cluster>/``.
 
@@ -257,20 +257,20 @@ def export_clusters(
 
 
 def run(
-    input_dir: Union[str, Path],
+    input_dir: str | Path,
     *,
-    output_dir: Optional[Union[str, Path]] = None,
-    embed_config: Optional[EmbedConfig] = None,
+    output_dir: str | Path | None = None,
+    embed_config: EmbedConfig | None = None,
     cluster_method: str = "spectral",
     nmin: int = 1,
-    mer_cos: Optional[float] = None,
+    mer_cos: float | None = None,
     max_num_spks: int = 14,
     projection_method: str = "tsne",
     export: bool = False,
     export_mode: str = "copy",
-    cache_dir: Optional[Path] = None,
-    registry: Optional[Registry] = None,
-    progress: Optional[ProgressFn] = None,
+    cache_dir: Path | None = None,
+    registry: Registry | None = None,
+    progress: ProgressFn | None = None,
 ) -> dict:
     """End-to-end run: scan → embed → cluster → project → (optionally) export."""
     config = embed_config or EmbedConfig(cache_dir=cache_dir)

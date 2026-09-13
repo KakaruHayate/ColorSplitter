@@ -7,12 +7,10 @@ resolution are all testable on their own.
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import pytest
 
 from colorsplitter.core import modelzoo as M
-
 
 # --- the shipped registry --------------------------------------------------
 

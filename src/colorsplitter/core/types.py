@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional, Sequence
+from typing import Any
 
 import numpy as np
 
@@ -27,7 +28,7 @@ class AudioItem:
     key: str
     size: int
     mtime_ns: int
-    duration: Optional[float] = None
+    duration: float | None = None
 
     def fingerprint(self) -> str:
         """Content-ish identity used by the embedding cache."""
@@ -61,7 +62,7 @@ class AudioDataset:
     def paths(self) -> list[Path]:
         return [it.path for it in self.items]
 
-    def select(self, keys: Sequence[str]) -> "AudioDataset":
+    def select(self, keys: Sequence[str]) -> AudioDataset:
         wanted = set(keys)
         return AudioDataset(self.root, [it for it in self.items if it.key in wanted])
 
@@ -100,9 +101,9 @@ class ClusterResult:
 
     def sizes(self) -> dict[int, int]:
         uniq, counts = np.unique(self.labels, return_counts=True)
-        return {int(u): int(c) for u, c in zip(uniq, counts)}
+        return {int(u): int(c) for u, c in zip(uniq, counts, strict=True)}
 
-    def copy(self) -> "ClusterResult":
+    def copy(self) -> ClusterResult:
         return ClusterResult(self.labels.copy(), self.method, dict(self.params))
 
 

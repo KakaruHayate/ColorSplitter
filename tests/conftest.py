@@ -49,7 +49,7 @@ def synthetic_audio_root(tmp_path: Path) -> Path:
         "beta_soft": 200.0,
         "gamma_bright": 500.0,
     }
-    for offset, (name, freq) in enumerate(layout.items()):
+    for _offset, (name, freq) in enumerate(layout.items()):
         for clip in range(3):
             write_wav(root / name / f"{name}_{clip}.wav", seconds=0.8, freq=freq + clip * 15)
     return root

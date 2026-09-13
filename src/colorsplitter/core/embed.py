@@ -25,9 +25,9 @@ dataset does not blow up memory. Every step is cached per file.
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Optional, Sequence
 
 import numpy as np
 
@@ -51,14 +51,14 @@ class EmbedConfig:
     """Settings for :func:`embed_dataset`."""
 
     encoder: str = "timbre"
-    weights_id: Optional[str] = None
-    device: Optional[str] = None
+    weights_id: str | None = None
+    device: str | None = None
     batch_size: int = 64
     workers: int = 1
     amp: bool = False
     trim_silences: object = "auto"
     use_cache: bool = True
-    cache_dir: Optional[Path] = None
+    cache_dir: Path | None = None
     rate: float = 1.3
     min_coverage: float = 0.75
     #: Files processed per batch of decoding. Bounds peak memory.
@@ -126,7 +126,7 @@ class _EncoderRunner:
             self._weights_key = f"{self._weights_key}+emotion"
         return self._emotion
 
-    def embed_wavs(self, wavs: Sequence[np.ndarray], progress: Optional[ProgressFn]) -> np.ndarray:
+    def embed_wavs(self, wavs: Sequence[np.ndarray], progress: ProgressFn | None) -> np.ndarray:
         encoder = self.config.encoder
         blocks = []
         if encoder in ("timbre", "speaker", "mix"):
@@ -150,10 +150,10 @@ class _EncoderRunner:
 
 def embed_dataset(
     dataset: AudioDataset,
-    config: Optional[EmbedConfig] = None,
+    config: EmbedConfig | None = None,
     *,
-    registry: Optional[Registry] = None,
-    progress: Optional[ProgressFn] = None,
+    registry: Registry | None = None,
+    progress: ProgressFn | None = None,
 ) -> EmbeddingSet:
     """Embed every item of *dataset*.
 
@@ -174,7 +174,7 @@ def embed_dataset(
         runner._emotion()  # noqa: SLF001
 
     dim_hint = None
-    cache: Optional[EmbeddingCache] = None
+    cache: EmbeddingCache | None = None
     if config.use_cache and config.cache_dir:
         cache_path = Path(config.cache_dir) / f"embeddings-{_cache_digest(config, runner.weights_key)}.npz"
         cache = EmbeddingCache(cache_path, dim=dim_hint)
@@ -204,7 +204,7 @@ def embed_dataset(
             trim_silences=config.trim_silences,
         )
         vectors = runner.embed_wavs(wavs, progress)
-        for item, vector in zip(block, vectors):
+        for item, vector in zip(block, vectors, strict=True):
             vec = np.asarray(vector, dtype=np.float32).reshape(-1)
             resolved[item.key] = vec
             if cache is not None:
@@ -225,11 +225,11 @@ def embed_dataset(
 
 def embed_paths(
     paths: Sequence[Path],
-    config: Optional[EmbedConfig] = None,
+    config: EmbedConfig | None = None,
     *,
-    registry: Optional[Registry] = None,
-    progress: Optional[ProgressFn] = None,
-    root: Optional[Path] = None,
+    registry: Registry | None = None,
+    progress: ProgressFn | None = None,
+    root: Path | None = None,
 ) -> EmbeddingSet:
     """Convenience wrapper: build a dataset from *paths* and embed it."""
     from .pipeline import dataset_from_paths

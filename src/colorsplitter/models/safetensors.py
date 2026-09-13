@@ -15,8 +15,8 @@ from __future__ import annotations
 import json
 import mmap
 import struct
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Iterator
 
 import numpy as np
 import torch

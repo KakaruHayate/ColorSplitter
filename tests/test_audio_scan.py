@@ -154,5 +154,5 @@ def test_preprocess_many_preserves_order(shuffled_audio_root) -> None:
     paths = sorted(shuffled_audio_root.rglob("*.wav"))
     got = audio.preprocess_many(paths, workers=1, trim_silences=False)
     assert len(got) == len(paths)
-    for path, wav in zip(paths, got):
+    for path, wav in zip(paths, got, strict=True):
         np.testing.assert_allclose(wav, audio.preprocess_wav(path, trim_silences=False))

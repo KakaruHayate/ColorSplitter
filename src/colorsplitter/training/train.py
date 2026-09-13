@@ -16,9 +16,8 @@ import json
 import logging
 import math
 import time
-from dataclasses import asdict, dataclass, field, fields
+from dataclasses import asdict, dataclass, fields
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
 import torch
@@ -37,7 +36,7 @@ class TrainConfig:
     """Everything a run needs. Also serialisable for reproducibility."""
 
     # --- data ---
-    dataset: Optional[Path] = None
+    dataset: Path | None = None
     output_dir: Path = Path("runs/encoder")
     val_fraction: float = 0.1
 
@@ -57,12 +56,12 @@ class TrainConfig:
 
     # --- bookkeeping ---
     seed: int = 42
-    device: Optional[str] = None
+    device: str | None = None
     log_every: int = 50
     checkpoint_every: int = 5_000
     val_every: int = 500
     val_batches: int = 8
-    resume_from: Optional[Path] = None
+    resume_from: Path | None = None
 
     # --- guards ---
     #: Abort rather than write a broken checkpoint if the loss goes non-finite.
@@ -74,7 +73,7 @@ class TrainConfig:
         Path(path).write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
 
     @classmethod
-    def from_yaml(cls, path: Path) -> "TrainConfig":
+    def from_yaml(cls, path: Path) -> TrainConfig:
         import yaml
 
         raw = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
@@ -95,7 +94,7 @@ def _split_classes(dataset: TimbreDataset, val_fraction: float, seed: int) -> tu
     rng = np.random.default_rng(seed)
     train_idx: list[int] = []
     val_idx: list[int] = []
-    for singer, indices in sorted(dataset.classes_by_singer().items()):
+    for _singer, indices in sorted(dataset.classes_by_singer().items()):
         if len(indices) == 1:
             train_idx.extend(indices)
             continue
@@ -217,7 +216,7 @@ def train(config: TrainConfig) -> dict:
     history: list[dict] = []
     running: list[float] = []
     started = time.time()
-    last_val: Optional[float] = None
+    last_val: float | None = None
     completed = start_step
 
     for step, (mels, labels) in enumerate(train_sampler.batches(config.max_steps), start=start_step + 1):

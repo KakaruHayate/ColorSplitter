@@ -11,8 +11,9 @@ from __future__ import annotations
 import threading
 import traceback
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, Optional
+from typing import Any
 
 __all__ = ["Task", "TaskManager"]
 
@@ -27,7 +28,7 @@ class Task:
     stage: str = ""
     done: int = 0
     total: int = 0
-    error: Optional[str] = None
+    error: str | None = None
     result: Any = None
     events: list[dict] = field(default_factory=list)
 
@@ -59,7 +60,7 @@ class TaskManager:
             self._cancel[task.id] = threading.Event()
         return task
 
-    def get(self, task_id: str) -> Optional[Task]:
+    def get(self, task_id: str) -> Task | None:
         return self._tasks.get(task_id)
 
     def cancel(self, task_id: str) -> bool:

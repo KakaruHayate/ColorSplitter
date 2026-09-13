@@ -13,10 +13,10 @@ from __future__ import annotations
 
 import logging
 import struct
+from collections.abc import Iterable, Iterator, Sequence
 from concurrent.futures import ProcessPoolExecutor
-from functools import lru_cache
+from functools import cache
 from pathlib import Path
-from typing import Iterable, Iterator, Optional, Sequence, Union
 
 import numpy as np
 
@@ -68,8 +68,8 @@ def vad_available() -> bool:
 
 
 def iter_audio_files(
-    root: Union[str, Path],
-    extensions: Optional[Iterable[str]] = None,
+    root: str | Path,
+    extensions: Iterable[str] | None = None,
 ) -> Iterator[Path]:
     """Yield every audio file under *root*, recursively, in a stable order.
 
@@ -103,8 +103,8 @@ def iter_audio_files(
 
 
 def find_audio_files(
-    root: Union[str, Path],
-    extensions: Optional[Iterable[str]] = None,
+    root: str | Path,
+    extensions: Iterable[str] | None = None,
 ) -> list[Path]:
     """Eager, sorted variant of :func:`iter_audio_files`."""
     return sorted(iter_audio_files(root, extensions), key=lambda p: str(p).lower())
@@ -114,8 +114,8 @@ def find_audio_files(
 
 
 def load_waveform(
-    fpath: Union[str, Path],
-    source_sr: Optional[int] = None,
+    fpath: str | Path,
+    source_sr: int | None = None,
 ) -> tuple[np.ndarray, int]:
     """Decode an audio file to a mono float32 waveform at its native rate.
 
@@ -192,7 +192,7 @@ def trim_long_silences(wav: np.ndarray) -> np.ndarray:
     wav = wav[: len(wav) - (len(wav) % samples_per_window)]
 
     # Convert the float waveform to 16-bit mono PCM
-    pcm_wave = struct.pack("%dh" % len(wav), *(np.round(wav * int16_max)).astype(np.int16))
+    pcm_wave = struct.pack("%dh" % len(wav), *(np.round(wav * int16_max)).astype(np.int16))  # noqa: UP031 - verbatim from upstream
 
     vad = webrtcvad.Vad(mode=3)
     voice_flags = [
@@ -212,10 +212,10 @@ def trim_long_silences(wav: np.ndarray) -> np.ndarray:
 
 
 def preprocess_wav(
-    fpath_or_wav: Union[str, Path, np.ndarray],
-    source_sr: Optional[int] = None,
+    fpath_or_wav: str | Path | np.ndarray,
+    source_sr: int | None = None,
     *,
-    trim_silences: Union[bool, str] = "auto",
+    trim_silences: bool | str = "auto",
 ) -> np.ndarray:
     """Resample, normalise and (optionally) silence-trim a waveform.
 
@@ -250,10 +250,10 @@ def preprocess_wav(
 
 
 def preprocess_many(
-    paths: Sequence[Union[str, Path]],
+    paths: Sequence[str | Path],
     *,
     workers: int = 1,
-    trim_silences: Union[bool, str] = "auto",
+    trim_silences: bool | str = "auto",
     chunk_size: int = 8,
 ) -> list[np.ndarray]:
     """Preprocess several files, optionally across processes.
@@ -273,11 +273,11 @@ def preprocess_many(
         return list(pool.map(worker, path_strs, chunksize=chunk_size))
 
 
-def _preprocess_one(path_str: str, trim_silences: Union[bool, str] = "auto") -> np.ndarray:
+def _preprocess_one(path_str: str, trim_silences: bool | str = "auto") -> np.ndarray:
     return preprocess_wav(path_str, trim_silences=trim_silences)
 
 
-@lru_cache(maxsize=None)
+@cache
 def _mel_filterbank():
     import librosa
 

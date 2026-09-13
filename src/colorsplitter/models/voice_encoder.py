@@ -20,9 +20,9 @@ partials, then L2-normalised again.
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from time import perf_counter as timer
-from typing import Callable, List, Optional, Sequence, Union
 
 import numpy as np
 import torch
@@ -60,9 +60,9 @@ class VoiceEncoder(nn.Module):
 
     def __init__(
         self,
-        device: Optional[Union[str, torch.device]] = None,
+        device: str | torch.device | None = None,
         verbose: bool = False,
-        weights_fpath: Optional[Union[Path, str]] = None,
+        weights_fpath: Path | str | None = None,
         amp: bool = False,
         load_weights: bool = True,
     ):
@@ -202,7 +202,7 @@ class VoiceEncoder(nn.Module):
         rate: float = 1.3,
         min_coverage: float = 0.75,
         batch_size: int = 64,
-        progress: Optional[ProgressFn] = None,
+        progress: ProgressFn | None = None,
     ) -> np.ndarray:
         """Embed many preprocessed utterances, batching the partials together.
 
@@ -212,8 +212,8 @@ class VoiceEncoder(nn.Module):
         if not wavs:
             return np.zeros((0, model_embedding_size), dtype=np.float32)
 
-        parts: List[np.ndarray] = []
-        counts: List[int] = []
+        parts: list[np.ndarray] = []
+        counts: list[int] = []
         for wav in wavs:
             m = self._mel_partials(np.asarray(wav, dtype=np.float32), rate, min_coverage)
             parts.append(m)
@@ -232,11 +232,11 @@ class VoiceEncoder(nn.Module):
         return out
 
     def _forward_batched(
-        self, mels: np.ndarray, batch_size: int, progress: Optional[ProgressFn] = None
+        self, mels: np.ndarray, batch_size: int, progress: ProgressFn | None = None
     ) -> np.ndarray:
         total = int(mels.shape[0])
         batch_size = max(1, int(batch_size))
-        chunks: List[np.ndarray] = []
+        chunks: list[np.ndarray] = []
         use_amp = self.amp and self.device.type == "cuda"
         for start in range(0, total, batch_size):
             chunk = torch.from_numpy(mels[start : start + batch_size]).to(self.device)
@@ -251,7 +251,7 @@ class VoiceEncoder(nn.Module):
         return np.concatenate(chunks, axis=0) if chunks else np.zeros((0, model_embedding_size), np.float32)
 
     @torch.no_grad()
-    def embed_speaker(self, wavs: List[np.ndarray], **kwargs) -> np.ndarray:
+    def embed_speaker(self, wavs: list[np.ndarray], **kwargs) -> np.ndarray:
         """Mean embedding of several utterances, L2-normalised."""
         raw_embed = np.mean(
             [self.embed_utterance(wav, return_partials=False, **kwargs) for wav in wavs], axis=0

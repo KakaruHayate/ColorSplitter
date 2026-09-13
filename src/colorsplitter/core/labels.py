@@ -8,7 +8,6 @@ makes undo/redo a matter of keeping a stack of label arrays.
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
-from typing import Optional
 
 import numpy as np
 
@@ -36,7 +35,7 @@ def _as_labels(labels) -> np.ndarray:
 def cluster_sizes(labels) -> dict[int, int]:
     """Number of points per cluster id."""
     uniq, counts = np.unique(np.asarray(labels), return_counts=True)
-    return {int(u): int(c) for u, c in zip(uniq, counts)}
+    return {int(u): int(c) for u, c in zip(uniq, counts, strict=True)}
 
 
 def compact(labels) -> np.ndarray:
@@ -72,7 +71,7 @@ def new_cluster_id(labels) -> int:
     return candidate
 
 
-def split_cluster(labels, cluster: int, indices: Sequence[int], new_id: Optional[int] = None) -> np.ndarray:
+def split_cluster(labels, cluster: int, indices: Sequence[int], new_id: int | None = None) -> np.ndarray:
     """Move *indices* out of *cluster* into a (new) cluster."""
     arr = _as_labels(labels)
     target = new_cluster_id(arr) if new_id is None else int(new_id)
@@ -103,7 +102,7 @@ def rename_cluster(labels, old: int, new: int) -> np.ndarray:
     return arr
 
 
-def remove_cluster(labels, cluster: int, *, reassign_to: Optional[int] = None) -> np.ndarray:
+def remove_cluster(labels, cluster: int, *, reassign_to: int | None = None) -> np.ndarray:
     """Delete a cluster, either moving its points elsewhere or dropping them.
 
     Points are dropped by assigning them ``-1``, matching the convention used

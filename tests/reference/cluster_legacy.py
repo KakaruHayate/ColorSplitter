@@ -91,7 +91,7 @@ class LegacyCommonClustering:
         if self.cluster_type == "spectral":
             self.cluster = LegacySpectralCluster(**kwargs)
         else:
-            raise ValueError("%s is not currently supported." % self.cluster_type)
+            raise ValueError("%s is not currently supported." % self.cluster_type)  # noqa: UP031 - verbatim
 
     def __call__(self, X):
         assert len(X.shape) == 2, "Shape of input should be [N, C]"

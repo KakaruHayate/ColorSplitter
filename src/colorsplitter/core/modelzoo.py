@@ -30,9 +30,9 @@ import shutil
 import tempfile
 import urllib.error
 import urllib.request
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable, Iterable, Optional, Sequence
 
 __all__ = [
     "DEFAULT_MIRRORS",
@@ -102,13 +102,13 @@ def _host_of(url: str) -> str:
     return url.split("://", 1)[-1].split("/", 1)[0]
 
 
-def _host_memory_file(cache_dir: Optional[Path]) -> Optional[Path]:
+def _host_memory_file(cache_dir: Path | None) -> Path | None:
     if cache_dir is None:
         return None
     return Path(cache_dir) / ".hf_host"
 
 
-def _remembered_host(cache_dir: Optional[Path]) -> Optional[str]:
+def _remembered_host(cache_dir: Path | None) -> str | None:
     path = _host_memory_file(cache_dir)
     if path is None or not path.exists():
         return None
@@ -118,7 +118,7 @@ def _remembered_host(cache_dir: Optional[Path]) -> Optional[str]:
         return None
 
 
-def _remember_host(cache_dir: Optional[Path], url: str) -> None:
+def _remember_host(cache_dir: Path | None, url: str) -> None:
     path = _host_memory_file(cache_dir)
     if path is None:
         return
@@ -159,7 +159,7 @@ def hf_endpoints(mirrors: Sequence[str] = ()) -> list[str]:
     return ordered
 
 
-def _order_urls(urls: Iterable[str], cache_dir: Optional[Path]) -> list[str]:
+def _order_urls(urls: Iterable[str], cache_dir: Path | None) -> list[str]:
     """Stable-sort candidate URLs so the last host that worked comes first."""
     urls = [u for u in urls if u]
     preferred = _remembered_host(cache_dir)
@@ -179,8 +179,8 @@ class RegistryEntry:
     file: str
     purpose: str
     urls: list[str] = field(default_factory=list)
-    sha256: Optional[str] = None
-    step: Optional[int] = None
+    sha256: str | None = None
+    step: int | None = None
     default: bool = False
     raw: dict = field(default_factory=dict)
 
@@ -218,7 +218,7 @@ class Registry:
         known = ", ".join(e.id for e in self.encoders)
         raise KeyError(f"unknown weight id {weight_id!r}; known ids: {known}")
 
-    def default_entry(self, purpose: Optional[str] = None) -> RegistryEntry:
+    def default_entry(self, purpose: str | None = None) -> RegistryEntry:
         candidates = [e for e in self.encoders if purpose is None or e.purpose == purpose]
         for entry in candidates:
             if entry.is_default:
@@ -235,7 +235,7 @@ class Registry:
         return hf_endpoints(self.mirrors)
 
 
-def load_registry(path: Optional[Path] = None) -> Registry:
+def load_registry(path: Path | None = None) -> Registry:
     """Load and validate ``registry.json``."""
     path = Path(path) if path else default_registry_path()
     if not path.exists():
@@ -271,7 +271,7 @@ def load_registry(path: Optional[Path] = None) -> Registry:
 # --- hashing / download -----------------------------------------------------
 
 
-def sha256_of(path: Path, progress: Optional[ProgressFn] = None) -> str:
+def sha256_of(path: Path, progress: ProgressFn | None = None) -> str:
     h = hashlib.sha256()
     total = path.stat().st_size
     done = 0
@@ -316,10 +316,10 @@ def download_file(
     urls: Iterable[str],
     dest: Path,
     *,
-    sha256: Optional[str] = None,
-    progress: Optional[ProgressFn] = None,
+    sha256: str | None = None,
+    progress: ProgressFn | None = None,
     attempts_per_url: int = 2,
-    cache_dir: Optional[Path] = None,
+    cache_dir: Path | None = None,
 ) -> Path:
     """Download the first working URL into *dest*.
 
@@ -332,7 +332,7 @@ def download_file(
 
     dest = Path(dest)
     dest.parent.mkdir(parents=True, exist_ok=True)
-    last_error: Optional[Exception] = None
+    last_error: Exception | None = None
 
     for position, url in enumerate(ordered):
         for attempt in range(1, attempts_per_url + 1):
@@ -372,10 +372,10 @@ def _hub_urls(endpoints: Sequence[str], repo: str, revision: str, filename: str)
 
 def resolve_weight(
     registry: Registry,
-    weight_id: Optional[str] = None,
+    weight_id: str | None = None,
     *,
     purpose: str = "timbre",
-    cache_dir: Optional[Path] = None,
+    cache_dir: Path | None = None,
     allow_download: bool = True,
     verify: bool = True,
 ) -> Path:
@@ -417,9 +417,9 @@ def resolve_weight(
 def fetch_emotion_model(
     registry: Registry,
     *,
-    cache_dir: Optional[Path] = None,
+    cache_dir: Path | None = None,
     allow_download: bool = True,
-    progress: Optional[ProgressFn] = None,
+    progress: ProgressFn | None = None,
 ) -> Path:
     """Download every file of the emotion model and return its directory."""
     spec = registry.emotion
@@ -454,8 +454,8 @@ def pack_inference_weights(
     source: Path,
     dest: Path,
     *,
-    weights_id: Optional[str] = None,
-    step: Optional[int] = None,
+    weights_id: str | None = None,
+    step: int | None = None,
 ) -> Path:
     """Strip everything but ``model_state`` from a training checkpoint.
 

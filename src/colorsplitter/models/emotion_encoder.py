@@ -18,8 +18,8 @@ from __future__ import annotations
 
 import json
 import logging
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Optional, Sequence, Union
 
 import numpy as np
 import torch
@@ -57,16 +57,16 @@ class EmotionEncoder:
 
     def __init__(
         self,
-        model_dir: Union[str, Path],
-        device: Optional[Union[str, torch.device]] = None,
+        model_dir: str | Path,
+        device: str | torch.device | None = None,
         *,
         normalize: bool = True,
     ):
         self.model_dir = Path(model_dir)
         self.normalize = bool(normalize)
         self._device = device
-        self._model: Optional[Wav2Vec2ForSpeechClassification] = None
-        self._config: Optional[Wav2Vec2Config] = None
+        self._model: Wav2Vec2ForSpeechClassification | None = None
+        self._config: Wav2Vec2Config | None = None
         self.load_report: dict = {}
 
     # --- device / loading ---------------------------------------------------
@@ -123,14 +123,14 @@ class EmotionEncoder:
         out = pooled if embeddings else logits
         return out.detach().cpu().numpy()
 
-    def embed_file(self, path: Union[str, Path]) -> np.ndarray:
+    def embed_file(self, path: str | Path) -> np.ndarray:
         """Embed an audio file (decoded and resampled to 16 kHz)."""
         wav, sr = load_waveform(path)
         if sr != EMOTION_SAMPLE_RATE:
             wav = resample_waveform(wav, sr, EMOTION_SAMPLE_RATE)
         return self.embed_waveform(wav)
 
-    def embed_files(self, paths: Sequence[Union[str, Path]], progress=None) -> np.ndarray:
+    def embed_files(self, paths: Sequence[str | Path], progress=None) -> np.ndarray:
         """Embed several files; returns ``(N, dim)``."""
         rows = []
         for i, path in enumerate(paths):
@@ -142,12 +142,12 @@ class EmotionEncoder:
         return np.stack(rows).astype(np.float32)
 
 
-def default_model_dir(cache_dir: Union[str, Path]) -> Path:
+def default_model_dir(cache_dir: str | Path) -> Path:
     """Conventional location of the emotion model inside a weights cache."""
     return Path(cache_dir) / "emotion"
 
 
-def read_config_names(model_dir: Union[str, Path]) -> list[str]:
+def read_config_names(model_dir: str | Path) -> list[str]:
     """Label names, readable without loading any weights."""
     path = Path(model_dir) / "config.json"
     raw = json.loads(path.read_text(encoding="utf-8"))

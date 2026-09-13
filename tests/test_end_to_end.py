@@ -20,7 +20,6 @@ from colorsplitter.core.embed import EmbedConfig, embed_dataset  # noqa: E402
 from colorsplitter.core.pipeline import (  # noqa: E402
     cluster_embeddings,
     export_clusters,
-    project_embeddings,
     run,
     scan,
 )
@@ -137,7 +136,6 @@ def test_run_rejects_an_empty_directory(tmp_path, weights_home) -> None:
 @pytest.mark.slow
 def test_labels_can_be_edited_after_a_run(synthetic_audio_root, weights_home, tmp_path) -> None:
     """Edit-by-point then export: the flow the WebUI drives."""
-    from colorsplitter.core.pipeline import dataset_from_paths
     from colorsplitter.core.types import ClusterResult
 
     dataset = scan(synthetic_audio_root)

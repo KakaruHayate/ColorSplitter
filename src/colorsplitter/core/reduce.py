@@ -8,7 +8,7 @@ PCA as a cheap preview option. Results are cached by the caller through
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 
@@ -24,7 +24,7 @@ def project(
     embeds: np.ndarray,
     method: str = "tsne",
     *,
-    random_state: Optional[int] = 42,
+    random_state: int | None = 42,
     **kwargs: Any,
 ) -> Projection:
     """Reduce *embeds* to two dimensions.

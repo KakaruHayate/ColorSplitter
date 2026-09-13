@@ -17,7 +17,6 @@ import json
 import logging
 import mimetypes
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
 from fastapi import FastAPI, HTTPException, Request
@@ -46,10 +45,10 @@ class ScanRequest(BaseModel):
 
 
 class RunRequest(BaseModel):
-    root: Optional[str] = None
+    root: str | None = None
     encoder: str = "timbre"
-    weights: Optional[str] = None
-    device: Optional[str] = None
+    weights: str | None = None
+    device: str | None = None
     batch_size: int = 64
     workers: int = 1
     amp: bool = False
@@ -57,7 +56,7 @@ class RunRequest(BaseModel):
     chunk: int = 256
     cluster: str = "spectral"
     nmin: int = 1
-    mer_cos: Optional[float] = None
+    mer_cos: float | None = None
     max_spks: int = 14
     min_cluster_size: int = 4
     eigen_solver: str = "auto"
@@ -87,16 +86,16 @@ class SplitRequest(BaseModel):
 
 class RemoveRequest(BaseModel):
     cluster: int
-    reassign_to: Optional[int] = None
+    reassign_to: int | None = None
 
 
 class ReclusterRequest(BaseModel):
-    method: Optional[str] = None
-    nmin: Optional[int] = None
-    mer_cos: Optional[float] = None
-    max_spks: Optional[int] = None
-    min_cluster_size: Optional[int] = None
-    eigen_solver: Optional[str] = None
+    method: str | None = None
+    nmin: int | None = None
+    mer_cos: float | None = None
+    max_spks: int | None = None
+    min_cluster_size: int | None = None
+    eigen_solver: str | None = None
 
 
 class ProjectionRequest(BaseModel):
@@ -110,7 +109,7 @@ class ExportRequest(BaseModel):
 
 class ImportRequest(BaseModel):
     path: str
-    keys: Optional[list[str]] = None
+    keys: list[str] | None = None
 
 
 # --- app --------------------------------------------------------------------
@@ -119,8 +118,8 @@ class ImportRequest(BaseModel):
 def create_app(
     *,
     cache_dir: Path,
-    registry_path: Optional[Path] = None,
-    initial_root: Optional[Path] = None,
+    registry_path: Path | None = None,
+    initial_root: Path | None = None,
 ) -> FastAPI:
     """Build the FastAPI application."""
     app = FastAPI(title="ColorSplitter", version="2.0.0")

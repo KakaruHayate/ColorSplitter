@@ -18,7 +18,6 @@ the project that must not change. What *is* new here:
 from __future__ import annotations
 
 import logging
-from typing import Optional
 
 import numpy as np
 import scipy
@@ -58,7 +57,7 @@ class SpectralCluster:
         max_num_spks: int = 14,
         pval: float = 0.02,
         min_pnum: int = 6,
-        oracle_num: Optional[int] = None,
+        oracle_num: int | None = None,
         eigen_solver: str = "auto",
         sparse_threshold: int = DEFAULT_SPARSE_THRESHOLD,
     ):
@@ -79,8 +78,8 @@ class SpectralCluster:
         self.eigen_solver = eigen_solver
         self.sparse_threshold = sparse_threshold
         #: Populated on each call; useful for tests and progress reporting.
-        self.last_num_spks: Optional[int] = None
-        self.last_solver: Optional[str] = None
+        self.last_num_spks: int | None = None
+        self.last_solver: str | None = None
 
     def __call__(self, X, pval=None, oracle_num=None):
         sim_mat = self.get_sim_mat(X)
@@ -135,7 +134,7 @@ class SpectralCluster:
             return "dense" if n <= self.sparse_threshold else "sparse"
         return self.eigen_solver
 
-    def _n_eig(self, oracle_num: Optional[int]) -> int:
+    def _n_eig(self, oracle_num: int | None) -> int:
         target = oracle_num if oracle_num is not None else self.k
         base = self.max_num_spks + 1
         return max(1, base, (target or 0) + 1)
@@ -234,7 +233,7 @@ class UmapHdbscan:
         min_samples: int = 20,
         min_cluster_size: int = 10,
         metric: str = "euclidean",
-        random_state: Optional[int] = 42,
+        random_state: int | None = 42,
     ):
         self.n_neighbors = n_neighbors
         self.n_components = n_components
@@ -273,7 +272,7 @@ class CommonClustering:
         self,
         cluster_type: str,
         cluster_line: int = 10,
-        mer_cos: Optional[float] = None,
+        mer_cos: float | None = None,
         min_cluster_size: int = 4,
         **kwargs,
     ):
