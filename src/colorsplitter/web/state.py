@@ -74,7 +74,6 @@ class SessionState:
                 "purpose": e.purpose,
                 "step": e.step,
                 "default": e.is_default,
-                "notes": e.notes,
             }
             for e in entries
         ]

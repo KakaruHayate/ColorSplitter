@@ -182,7 +182,6 @@ class RegistryEntry:
     sha256: Optional[str] = None
     step: Optional[int] = None
     default: bool = False
-    notes: str = ""
     raw: dict = field(default_factory=dict)
 
     @property
@@ -240,9 +239,6 @@ def load_registry(path: Optional[Path] = None) -> Registry:
         urls = list(item.get("urls", []))
         if item.get("url"):
             urls.insert(0, item["url"])
-        notes = item.get("notes", "")
-        if isinstance(notes, (list, tuple)):
-            notes = " ".join(str(n) for n in notes)
         encoders.append(
             RegistryEntry(
                 id=item["id"],
@@ -252,7 +248,6 @@ def load_registry(path: Optional[Path] = None) -> Registry:
                 sha256=item.get("sha256"),
                 step=item.get("step"),
                 default=bool(item.get("default", False)),
-                notes=str(notes),
                 raw=item,
             )
         )

@@ -180,7 +180,6 @@ def cmd_weights(args: argparse.Namespace) -> int:
                 "step": entry.step,
                 "default": entry.is_default,
                 "sha256": (entry.sha256 or "")[:16],
-                "notes": entry.notes,
             }
             for entry in registry.encoders
         ]

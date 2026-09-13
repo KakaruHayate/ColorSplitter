@@ -154,7 +154,7 @@ cs weights pack --source run/latest.pt --dest models/release/timbre-v2.pt --step
 
 | command | meaning |
 |---|---|
-| `list` | ids, purpose, step, hash prefix, licence notes |
+| `list` | ids, purpose, step, hash prefix |
 | `fetch` | download and verify into the cache |
 | `pack` | strip optimiser state from a training checkpoint for distribution |
 

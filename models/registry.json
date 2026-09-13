@@ -33,15 +33,7 @@
         "bytes": 17100415,
         "sha256": "7e975269badb2325bea04d2cec58218901d791aeb6b8d622f0136d45282a3cac",
         "note": "Archived in git history; recoverable with `git cat-file blob <blob>`."
-      },
-      "notes": [
-        "Default weight. This is the one the tool has always been used with.",
-        "Its training data is used to build an embedding model that feeds an",
-        "unsupervised clustering step. That data's licence constrains use in a",
-        "synthesis path; this is not a synthesis model. The boundary is stated",
-        "plainly here rather than left implicit. Choose timbre-alt-v1 if you",
-        "want a weight with no such caveat."
-      ]
+      }
     },
     {
       "id": "timbre-alt-v1",
@@ -61,11 +53,7 @@
         "bytes": 17095286,
         "sha256": "0e5d54cd75ec4751e5db94eb16933f4b705b3884b8afbb1736d85cae2be7c7e5",
         "note": "The filename said 1570000 but the checkpoint's own step counter reads 165000."
-      },
-      "notes": [
-        "Cleaner licensing provenance, noticeably weaker separation in practice.",
-        "Kept so the choice is available and explicit."
-      ]
+      }
     },
     {
       "id": "speaker-upstream-v1",
@@ -79,15 +67,8 @@
       "sha256": null,
       "source": {
         "kind": "upstream",
-        "project": "resemble-ai/Resemblyzer",
-        "licence": "MIT"
-      },
-      "notes": [
-        "The upstream encoder, trained for speaker identity rather than timbre",
-        "style. It answers a different question: use it to tell singers apart,",
-        "not to separate one singer's registers. Same architecture, so it loads",
-        "into the same encoder."
-      ]
+        "project": "resemble-ai/Resemblyzer"
+      }
     }
   ],
   "downloads": {
@@ -100,12 +81,6 @@
         "preprocessor_config.json",
         "vocab.json",
         "model.safetensors"
-      ],
-      "licence": "see the model card",
-      "notes": [
-        "safetensors is preferred over pytorch_model.bin: it loads by tensor",
-        "name with no unpickling, which is also why the emotion trunk is",
-        "implemented in-tree instead of through transformers."
       ]
     }
   }

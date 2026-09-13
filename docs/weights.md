@@ -22,7 +22,6 @@ the blob, and not visible from the history at all.
 | `sha256` | hash of the published asset; `null` until the assets are staged |
 | `urls` | release asset locations, tried in order |
 | `source` | provenance: where the weight came from, including the git blob id for archived ones |
-| `notes` | what it is for, and its licence position |
 
 ## The weights
 
@@ -36,26 +35,18 @@ records the blob id (`e8560833…`) along with the SHA-256 of the original bytes
 that the recovery is verifiable rather than hopeful. `scripts/prepare_release.py`
 performs the recovery and re-derives the hash.
 
-**Licence position, stated plainly.** Its training data was used to build an
-embedding model that feeds an unsupervised clustering step. That data's licence
-constrains use in a *synthesis path*; this is not a synthesis model, it produces
-no audio and is not a component of anything that generates a voice. This is
-close to the line, and it is written here rather than glossed, because you should
-be able to make that call yourself. If you would rather not, use `timbre-alt-v1`.
+### `timbre-alt-v1`
 
-### `timbre-alt-v1` — the cautious alternative
-
-Trained from a source with no such caveat. It separates noticeably worse, which
-is why it is not the default. The file is named for the step counter *inside* the
-checkpoint (165000), because the previous filename claimed 1570000 and was simply
-wrong.
+An alternative checkpoint. It separates noticeably worse, which is why it is not
+the default. The file is named for the step counter *inside* the checkpoint
+(165000), because the previous filename claimed 1570000 and was simply wrong.
 
 ### `speaker-upstream-v1` — speaker identity
 
-The upstream Resemblyzer encoder (MIT). This one separates *singers*, not
-registers — a different question. Use it when you need to tell performers apart,
-for instance when auditing a mixed dataset. Same architecture, so it drops into
-the same encoder.
+The upstream Resemblyzer encoder. This one separates *singers*, not registers —
+a different question. Use it when you need to tell performers apart, for
+instance when auditing a mixed dataset. Same architecture, so it drops into the
+same encoder.
 
 ### The emotion model
 

@@ -60,12 +60,12 @@ cs weights list                                # 有哪些权重可用
 | id | 用途 | 说明 |
 |---|---|---|
 | `timbre-v1` | 音色 | 默认 |
-| `timbre-alt-v1` | 音色 | 许可来源更干净，区分度较弱 |
+| `timbre-alt-v1` | 音色 | 备选 checkpoint，区分度较弱 |
 | `speaker-upstream-v1` | 说话人身份 | 上游 Resemblyzer 官方权重 |
 
 `timbre` 和 `speaker` 回答的是**不同的问题** —— 前者分离同一歌手的音区，后者区分不同歌手。按需选择。
 
-每个权重的许可状况都记录在注册表里对应条目的旁边，而不是在这里用一句话概括 —— 因为它们的约束各不相同。详见 [docs/weights.md](docs/weights.md)。
+权重的来源、缓存与镜像见 [docs/weights.md](docs/weights.md)。
 
 ## 训练
 
@@ -81,7 +81,7 @@ cs weights list                                # 有哪些权重可用
 | [cli.md](docs/cli.md) | 全部命令与参数 |
 | [webui.md](docs/webui.md) | 界面说明与审阅流程 |
 | [training.md](docs/training.md) | 数据集布局、采样器、配置、断点续训 |
-| [weights.md](docs/weights.md) | 注册表、缓存、镜像、来源、许可 |
+| [weights.md](docs/weights.md) | 注册表、缓存、镜像、来源 |
 | [design.md](docs/design.md) | 架构、保留了什么、重写了什么 |
 
 ## 许可

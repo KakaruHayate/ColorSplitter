@@ -68,7 +68,3 @@ Apache License 2.0), written to avoid pulling in another package.
 The bundled training lineage descends from CorentinJ's Real-Time-Voice-Cloning
 (<https://github.com/CorentinJ/Real-Time-Voice-Cloning>, MIT), specifically its
 speaker-encoder training and GE2E objective.
-
-Licence notes for each distributed weight are recorded in
-`models/registry.json` alongside the weight itself, because the constraints
-differ per weight and a single blanket statement would be misleading.

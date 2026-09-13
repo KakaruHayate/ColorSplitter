@@ -48,13 +48,6 @@ def test_shipped_registry_records_provenance_for_archived_weights() -> None:
     assert source.get("bytes", 0) > 1_000_000
 
 
-def test_shipped_registry_documents_the_licence_boundary() -> None:
-    registry = M.load_registry()
-    entry = registry.default_entry("timbre")
-    notes = " ".join(entry.notes) if isinstance(entry.notes, list) else str(entry.notes)
-    assert "synthesis" in notes.lower()
-
-
 def test_shipped_registry_emotion_target_is_declared() -> None:
     registry = M.load_registry()
     emotion = registry.emotion

@@ -77,15 +77,13 @@ cache on first use and verified by SHA-256. `models/registry.json` is the list.
 | id | purpose | notes |
 |---|---|---|
 | `timbre-v1` | timbre | default |
-| `timbre-alt-v1` | timbre | cleaner licensing provenance, weaker separation |
+| `timbre-alt-v1` | timbre | alternative checkpoint, weaker separation |
 | `speaker-upstream-v1` | speaker identity | upstream Resemblyzer encoder |
 
 `timbre` and `speaker` answer different questions — separating one singer's
 registers versus telling singers apart. Pick accordingly.
 
-Each weight's licence position is recorded next to it in the registry rather
-than summarised in one sentence here, because the constraints differ per weight.
-See [docs/weights.md](docs/weights.md).
+See [docs/weights.md](docs/weights.md) for provenance, caching and mirrors.
 
 ## Training
 
@@ -105,7 +103,7 @@ See [docs/training.md](docs/training.md).
 | [cli.md](docs/cli.md) | every command and flag |
 | [webui.md](docs/webui.md) | the interface, and the review workflow |
 | [training.md](docs/training.md) | dataset layout, sampler, config, resuming |
-| [weights.md](docs/weights.md) | registry, cache, mirrors, provenance, licences |
+| [weights.md](docs/weights.md) | registry, cache, mirrors, provenance |
 | [design.md](docs/design.md) | architecture, what was kept, what was replaced |
 
 ## Licence
