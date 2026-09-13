@@ -1,0 +1,112 @@
+{
+  "version": 2,
+  "_comment": [
+    "Weight registry. Weights are NOT stored in this repository: a weight swap",
+    "used to look like an ordinary source edit, which is how a good checkpoint",
+    "once got quietly overwritten. Everything here is identified by hash and",
+    "fetched on demand into a local cache.",
+    "",
+    "Run `python scripts/prepare_release.py` to recover the archived weight,",
+    "strip optimiser state, write the release assets and fill in the 'sha256'",
+    "fields below. Until that has been done a null sha256 means 'unverified'",
+    "rather than 'checked and fine'."
+  ],
+  "mirrors": [
+    "https://hf-mirror.com"
+  ],
+  "encoders": [
+    {
+      "id": "timbre-v1",
+      "file": "timbre-v1.pt",
+      "purpose": "timbre",
+      "default": true,
+      "step": 1570001,
+      "urls": [
+        "https://github.com/KakaruHayate/ColorSplitter/releases/download/weights-v2/timbre-v1.pt"
+      ],
+      "sha256": null,
+      "source": {
+        "kind": "git-blob",
+        "commit": "eaed7bd",
+        "path": "pretrain/encoder_1570000.bak",
+        "blob": "e8560833efe9e9e0f0bda3cba03311a0fe5f201f",
+        "bytes": 17100415,
+        "sha256": "7e975269badb2325bea04d2cec58218901d791aeb6b8d622f0136d45282a3cac",
+        "note": "Archived in git history; recoverable with `git cat-file blob <blob>`."
+      },
+      "notes": [
+        "Default weight. This is the one the tool has always been used with.",
+        "Its training data is used to build an embedding model that feeds an",
+        "unsupervised clustering step. That data's licence constrains use in a",
+        "synthesis path; this is not a synthesis model. The boundary is stated",
+        "plainly here rather than left implicit. Choose timbre-alt-v1 if you",
+        "want a weight with no such caveat."
+      ]
+    },
+    {
+      "id": "timbre-alt-v1",
+      "file": "timbre-alt-v1.pt",
+      "purpose": "timbre",
+      "default": false,
+      "step": 165000,
+      "urls": [
+        "https://github.com/KakaruHayate/ColorSplitter/releases/download/weights-v2/timbre-alt-v1.pt"
+      ],
+      "sha256": null,
+      "source": {
+        "kind": "git-blob",
+        "commit": "793afcf",
+        "path": "pretrain/encoder_1570000.bak",
+        "blob": "f25b814ed4b69a1c7b61f6f956947100abd51a0f",
+        "bytes": 17095286,
+        "sha256": "0e5d54cd75ec4751e5db94eb16933f4b705b3884b8afbb1736d85cae2be7c7e5",
+        "note": "The filename said 1570000 but the checkpoint's own step counter reads 165000."
+      },
+      "notes": [
+        "Cleaner licensing provenance, noticeably weaker separation in practice.",
+        "Kept so the choice is available and explicit."
+      ]
+    },
+    {
+      "id": "speaker-upstream-v1",
+      "file": "speaker-upstream-v1.pt",
+      "purpose": "speaker",
+      "default": false,
+      "urls": [
+        "https://github.com/resemble-ai/Resemblyzer/raw/master/resemblyzer/pretrained.pt",
+        "https://hf-mirror.com/resemble-ai/Resemblyzer/resolve/main/resemblyzer/pretrained.pt"
+      ],
+      "sha256": null,
+      "source": {
+        "kind": "upstream",
+        "project": "resemble-ai/Resemblyzer",
+        "licence": "MIT"
+      },
+      "notes": [
+        "The upstream encoder, trained for speaker identity rather than timbre",
+        "style. It answers a different question: use it to tell singers apart,",
+        "not to separate one singer's registers. Same architecture, so it loads",
+        "into the same encoder."
+      ]
+    }
+  ],
+  "downloads": {
+    "emotion": {
+      "repo": "audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim",
+      "revision": "main",
+      "target": "emotion",
+      "files": [
+        "config.json",
+        "preprocessor_config.json",
+        "vocab.json",
+        "model.safetensors"
+      ],
+      "licence": "see the model card",
+      "notes": [
+        "safetensors is preferred over pytorch_model.bin: it loads by tensor",
+        "name with no unpickling, which is also why the emotion trunk is",
+        "implemented in-tree instead of through transformers."
+      ]
+    }
+  }
+}

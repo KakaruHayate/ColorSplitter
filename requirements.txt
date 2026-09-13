@@ -1,11 +1,10 @@
-torch
-matplotlib>=3.0.0
-numpy>=1.20.3
-pandas
-Resemblyzer
-scikit_learn
-sounddevice
-tqdm
-umap_learn
-hdbscan
-transformers
+# The dependency list lives in pyproject.toml. This file only exists so the
+# familiar command keeps working:
+#
+#     pip install -r requirements.txt
+#
+# For a torch-free install (timbre / speaker encoders only), use:
+#
+#     pip install -e .
+#
+-e .[all]

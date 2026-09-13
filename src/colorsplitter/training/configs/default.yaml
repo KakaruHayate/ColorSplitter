@@ -1,0 +1,37 @@
+# Default encoder training configuration.
+#
+# Run:  cs train --dataset <path> --config src/colorsplitter/training/configs/default.yaml
+#
+# The dataset root is expected to contain one directory per class:
+#     <root>/<singer>_<timbre>/<audio>
+#
+# sings_per_batch is the interesting knob: it sets how many distinct singers the
+# classes in a batch are drawn from. Lower values put more same-singer,
+# different-timbre pairs in one batch, which is the hard-negative construction
+# this project's encoder is meant to be trained with. Raising it to
+# speakers_per_batch disables that and samples classes uniformly.
+
+dataset: null
+output_dir: runs/encoder
+val_fraction: 0.1
+
+speakers_per_batch: 8
+utterances_per_speaker: 4
+singers_per_batch: 4
+
+max_steps: 200000
+lr: 0.001
+weight_decay: 0.0
+decay_every: 5000
+decay_rate: 0.8
+grad_clip: 3.0
+scheduler_floor: 0.00001
+
+seed: 42
+device: null
+log_every: 50
+checkpoint_every: 5000
+val_every: 500
+val_batches: 8
+resume_from: null
+stop_on_nonfinite: true

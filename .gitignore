@@ -162,4 +162,25 @@ cython_debug/
 .DS_Store
 /input/*
 /output/*
+
+# Agent working notes / local scratch — must never be committed
+.workbuddy/
+
+# Weight binaries are never committed: they are downloaded into a per-user cache
+# and published as release assets. See models/registry.json.
 /pretrain/wav2vec2-large-robust-12-ft-emotion-msp-dim/*.bin
+/pretrain/wav2vec2-large-robust-12-ft-emotion-msp-dim/*.safetensors
+*.bak
+*.pt
+!/models/registry.json
+
+# Local weights cache, release staging and training runs
+/models/.cache/
+/models/release/
+/runs/
+/frontend/node_modules/
+/.tools/
+/.venv/
+/.venv-cs/
+/.cs-home/
+/demo_audio/
